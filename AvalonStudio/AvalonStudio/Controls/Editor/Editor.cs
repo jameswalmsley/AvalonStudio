@@ -30,11 +30,11 @@
             {
                 using (var fs = File.OpenText(file.Location))
                 {
-                    TextDocument = new TextDocument(fs.ReadToEnd());
+                    Document = new TextDocument(fs.ReadToEnd());
                 }
             }
 
-            Document = new Document(file);
+            //Document = new Document(file);
 
             DocumentLoaded(this, new EventArgs());
 
@@ -44,8 +44,8 @@
             }
         }
 
-        public TextDocument TextDocument { get; set; }
-        public Document Document { get; set; }
+        public TextDocument Document { get; set; }
+        //public Document Document { get; set; }
 
         public void Shutdown()
         {
@@ -82,11 +82,11 @@
 
                     if (Document != null)
                     {
-                        var result = Document.LanguageService.RunCodeAnalysis(() => editorLock.WaitingWriteCount > 0);
+                        //var result = Document.LanguageService.RunCodeAnalysis(() => editorLock.WaitingWriteCount > 0);
 
                         Dispatcher.UIThread.InvokeAsync(() =>
                         {
-                            Document.SyntaxHighlightingData = result;
+                            //Document.SyntaxHighlightingData = result;
                         });
                     }
 

@@ -97,6 +97,7 @@
       <HintPath>..\packages\Perspex.9999.0.620-nightly\lib\portable-windows8+net45\Perspex.Themes.Default.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.9\lib\net45\Serilog.dll</HintPath>
@@ -214,20 +215,51 @@
     <Compile Include="TextEditor\Document\UndoOperationGroup.cs" />
     <Compile Include="TextEditor\Document\UndoStack.cs" />
     <Compile Include="TextEditor\Document\WeakLineTracker.cs" />
+    <Compile Include="TextEditor\Editing\SelectionSegment.cs" />
     <Compile Include="TextEditor\LineNumberMargin.cs" />
+    <Compile Include="TextEditor\PerspexExtensions\LineBreakCondition.cs" />
+    <Compile Include="TextEditor\Rendering\BackgroundGeometryBuilder.cs" />
+    <Compile Include="TextEditor\Rendering\CollapsedLineSection.cs" />
+    <Compile Include="TextEditor\Rendering\ColumnRulerRenderer.cs" />
+    <Compile Include="TextEditor\Rendering\CurrentLineHighlightRenderer.cs" />
+    <Compile Include="TextEditor\Rendering\DefaultTextRunTypographyProperties.cs" />
+    <Compile Include="TextEditor\Rendering\HeightTree.cs" />
+    <Compile Include="TextEditor\Rendering\HeightTreeLineNode.cs" />
+    <Compile Include="TextEditor\Rendering\HeightTreeNode.cs" />
+    <Compile Include="TextEditor\Rendering\IBackgroundRenderer.cs" />
+    <Compile Include="TextEditor\Rendering\ITextRunContructionContext.cs" />
+    <Compile Include="TextEditor\Rendering\IVisualLineTransformer.cs" />
+    <Compile Include="TextEditor\Rendering\Layer.cs" />
+    <Compile Include="TextEditor\Rendering\LayerPosition.cs" />
+    <Compile Include="TextEditor\Rendering\TextLayer.cs" />
+    <Compile Include="TextEditor\Rendering\TextViewPosition.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLine.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLineElement.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLineElementGenerator.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLineText.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLineTextRunProperties.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLineTextSource.cs" />
+    <Compile Include="TextEditor\Rendering\VisualYPosition.cs" />
     <Compile Include="TextEditor\TextEditor.cs" />
+    <Compile Include="TextEditor\TextEditorComponent.cs" />
     <Compile Include="TextEditor\TextEditorMargin.cs" />
+    <Compile Include="TextEditor\TextEditorOptions.cs" />
     <Compile Include="TextEditor\TextEditorStyle.cs" />
     <Compile Include="TextEditor\TextView.cs" />
+    <Compile Include="TextEditor\Utils\Boxes.cs" />
     <Compile Include="TextEditor\Utils\CallbackOnDispose.cs" />
     <Compile Include="TextEditor\Utils\CharRope.cs" />
     <Compile Include="TextEditor\Utils\DelayedEvents.cs" />
     <Compile Include="TextEditor\Utils\Deque.cs" />
     <Compile Include="TextEditor\Utils\Empty.cs" />
+    <Compile Include="TextEditor\Utils\ExtensionMethods.cs" />
     <Compile Include="TextEditor\Utils\ImmutableStack.cs" />
+    <Compile Include="TextEditor\Utils\ObserveAddRemoveColection.cs" />
+    <Compile Include="TextEditor\Utils\PixelSnapHelpers.cs" />
     <Compile Include="TextEditor\Utils\Rope.cs" />
     <Compile Include="TextEditor\Utils\RopeNode.cs" />
     <Compile Include="TextEditor\Utils\RopeTextReader.cs" />
+    <Compile Include="TextEditor\Utils\StringSegment.cs" />
     <Compile Include="TextEditor\Utils\ThrowUtil.cs" />
     <Compile Include="TextEditor\Utils\WeakEventManagerBase.cs" />
     <Compile Include="Workspace.cs" />

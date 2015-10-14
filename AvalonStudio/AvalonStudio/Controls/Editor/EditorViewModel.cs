@@ -22,12 +22,12 @@
 
             model.DocumentLoaded += (sender, e) =>
             {
-                model.Document.CodeAnalysisDataChanged += (s, ee) =>
-                {
-                    HighlightingData = new ObservableCollection<SyntaxHighlightingData>(model.Document.SyntaxHighlightingData);
-                };
+                //model.Document.CodeAnalysisDataChanged += (s, ee) =>
+                //{
+                //    HighlightingData = new ObservableCollection<SyntaxHighlightingData>(model.Document.SyntaxHighlightingData);
+                //};
 
-                this.RaisePropertyChanged(() => TextDocument);
+                this.RaisePropertyChanged(() => Document);
             };
 
             
@@ -55,11 +55,11 @@
             }
         }
 
-        public TextDocument TextDocument
+        public TextDocument Document
         {
             get
             {
-                return Model.TextDocument;
+                return Model.Document;
             }
         }
 
