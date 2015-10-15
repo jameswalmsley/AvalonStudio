@@ -1,7 +1,9 @@
 ﻿using Perspex;
+using Perspex.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Media;
 using System.Xml;
 
 namespace AvalonStudio.TextEditor.Utils
@@ -87,14 +89,14 @@ namespace AvalonStudio.TextEditor.Utils
         /// <summary>
         /// Creates typeface from the framework element.
         /// </summary>
-        //public static Typeface CreateTypeface(this FrameworkElement fe)
-        //{
-        //    throw new NotImplementedException("Port to Perspex.");
-        //    //return new Typeface((FontFamily)fe.GetValue(TextBlock.FontFamilyProperty),
-        //    //                    (FontStyle)fe.GetValue(TextBlock.FontStyleProperty),
-        //    //                    (FontWeight)fe.GetValue(TextBlock.FontWeightProperty),
-        //    //                    (FontStretch)fe.GetValue(TextBlock.FontStretchProperty));
-        //}
+        public static Typeface CreateTypeface(this Control fe)
+        {
+            throw new NotImplementedException("Port to Perspex.");
+        //    return new Typeface((FontFamily)fe.GetValue(TextBlock.FontFamilyProperty),
+        //                        (FontStyle)fe.GetValue(TextBlock.FontStyleProperty),
+        //                        (FontWeight)fe.GetValue(TextBlock.FontWeightProperty),
+        //                        (FontStretch)fe.GetValue(TextBlock.FontStretchProperty));
+        }
         #endregion
 
         #region AddRange / Sequence

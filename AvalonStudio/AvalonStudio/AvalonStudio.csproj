@@ -218,11 +218,16 @@
     <Compile Include="TextEditor\Editing\SelectionSegment.cs" />
     <Compile Include="TextEditor\LineNumberMargin.cs" />
     <Compile Include="TextEditor\PerspexExtensions\LineBreakCondition.cs" />
+    <Compile Include="TextEditor\PerspexExtensions\Media\TextFormatting\TextFormatting.cs" />
+    <Compile Include="TextEditor\PerspexExtensions\Media\TextFormatting\TextRunProperties.cs" />
+    <Compile Include="TextEditor\PerspexExtensions\Media\TextFormatting\TextSource.cs" />
+    <Compile Include="TextEditor\PerspexExtensions\TextAndFontProperties.cs" />
     <Compile Include="TextEditor\Rendering\BackgroundGeometryBuilder.cs" />
     <Compile Include="TextEditor\Rendering\CollapsedLineSection.cs" />
     <Compile Include="TextEditor\Rendering\ColumnRulerRenderer.cs" />
     <Compile Include="TextEditor\Rendering\CurrentLineHighlightRenderer.cs" />
     <Compile Include="TextEditor\Rendering\DefaultTextRunTypographyProperties.cs" />
+    <Compile Include="TextEditor\Rendering\GlobalTextRunProperties.cs" />
     <Compile Include="TextEditor\Rendering\HeightTree.cs" />
     <Compile Include="TextEditor\Rendering\HeightTreeLineNode.cs" />
     <Compile Include="TextEditor\Rendering\HeightTreeNode.cs" />
@@ -237,6 +242,7 @@
     <Compile Include="TextEditor\Rendering\VisualLineElement.cs" />
     <Compile Include="TextEditor\Rendering\VisualLineElementGenerator.cs" />
     <Compile Include="TextEditor\Rendering\VisualLineText.cs" />
+    <Compile Include="TextEditor\Rendering\VisualLineTextParagraphProperties.cs" />
     <Compile Include="TextEditor\Rendering\VisualLineTextRunProperties.cs" />
     <Compile Include="TextEditor\Rendering\VisualLineTextSource.cs" />
     <Compile Include="TextEditor\Rendering\VisualYPosition.cs" />

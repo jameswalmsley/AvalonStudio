@@ -1,8 +1,8 @@
 ﻿namespace AvalonStudio.TextEditor.Rendering
 {
     using AvalonStudio.TextEditor.Document;
+    using Perspex.Media.TextFormatting;
     using Utils;
-    using System.Windows.Media.TextFormatting;
 
     /// <summary>
     /// Contains information relevant for text run creation.

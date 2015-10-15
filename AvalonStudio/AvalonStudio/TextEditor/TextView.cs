@@ -15,8 +15,11 @@
     using Utils;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Globalization;
+    using Perspex.Media.TextFormatting;
 
-    public class TextView : Control, IScrollInfo
+    public class TextView : TemplatedControl, IScrollInfo
     {
 
         public const int WheelScrollLines = 3;
@@ -150,6 +153,8 @@
             
             this.Options = new TextEditorOptions();
 
+            elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>((v)=> { }, (v)=> { });
+
             layers = new LayerCollection(this);
             InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
             
@@ -280,93 +285,94 @@
         }
 
         VisualLine BuildVisualLine(DocumentLine documentLine,
-                                   /*TextRunProperties globalTextRunProperties,
-                                   VisualLineTextParagraphProperties paragraphProperties,*/
+                                   TextRunProperties globalTextRunProperties,
+                                   VisualLineTextParagraphProperties paragraphProperties,
                                    VisualLineElementGenerator[] elementGeneratorsArray,
                                    IVisualLineTransformer[] lineTransformersArray,
                                    Size availableSize)
         {
-            throw new Exception("port to perspex text rendering.");
-            //if (heightTree.GetIsCollapsed(documentLine.LineNumber))
-            //    throw new InvalidOperationException("Trying to build visual line from collapsed line");
+            //throw new Exception("port to perspex text rendering.");
+            if (heightTree.GetIsCollapsed(documentLine.LineNumber))
+                throw new InvalidOperationException("Trying to build visual line from collapsed line");
 
-            ////Debug.WriteLine("Building line " + documentLine.LineNumber);
+            //Debug.WriteLine("Building line " + documentLine.LineNumber);
 
-            //VisualLine visualLine = new VisualLine(this, documentLine);
-            //VisualLineTextSource textSource = new VisualLineTextSource(visualLine)
-            //{
-            //    Document = document,
-            //    //GlobalTextRunProperties = globalTextRunProperties,
-            //    TextView = this
-            //};
+            VisualLine visualLine = new VisualLine(this, documentLine);
+            VisualLineTextSource textSource = new VisualLineTextSource(visualLine)
+            {
+                Document = document,
+                //GlobalTextRunProperties = globalTextRunProperties,
+                TextView = this
+            };
 
-            //visualLine.ConstructVisualElements(textSource, elementGeneratorsArray);
+            visualLine.ConstructVisualElements(textSource, elementGeneratorsArray);
 
-            //if (visualLine.FirstDocumentLine != visualLine.LastDocumentLine)
-            //{
-            //    // Check whether the lines are collapsed correctly:
-            //    double firstLinePos = heightTree.GetVisualPosition(visualLine.FirstDocumentLine.NextLine);
-            //    double lastLinePos = heightTree.GetVisualPosition(visualLine.LastDocumentLine.NextLine ?? visualLine.LastDocumentLine);
-            //    if (!firstLinePos.IsClose(lastLinePos))
-            //    {
-            //        for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++)
-            //        {
-            //            if (!heightTree.GetIsCollapsed(i))
-            //                throw new InvalidOperationException("Line " + i + " was skipped by a VisualLineElementGenerator, but it is not collapsed.");
-            //        }
-            //        throw new InvalidOperationException("All lines collapsed but visual pos different - height tree inconsistency?");
-            //    }
-            //}
+            if (visualLine.FirstDocumentLine != visualLine.LastDocumentLine)
+            {
+                // Check whether the lines are collapsed correctly:
+                double firstLinePos = heightTree.GetVisualPosition(visualLine.FirstDocumentLine.NextLine);
+                double lastLinePos = heightTree.GetVisualPosition(visualLine.LastDocumentLine.NextLine ?? visualLine.LastDocumentLine);
+                if (!firstLinePos.IsClose(lastLinePos))
+                {
+                    for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++)
+                    {
+                        if (!heightTree.GetIsCollapsed(i))
+                            throw new InvalidOperationException("Line " + i + " was skipped by a VisualLineElementGenerator, but it is not collapsed.");
+                    }
+                    throw new InvalidOperationException("All lines collapsed but visual pos different - height tree inconsistency?");
+                }
+            }
 
-            //visualLine.RunTransformers(textSource, lineTransformersArray);
+            visualLine.RunTransformers(textSource, lineTransformersArray);
 
-            //// now construct textLines:
-            //int textOffset = 0;
-            ////TextLineBreak lastLineBreak = null;
+            // now construct textLines:
+            int textOffset = 0;
+            //TextLineBreak lastLineBreak = null;
             //var textLines = new List<TextLine>();
-            ////paragraphProperties.indent = 0;
-            ////paragraphProperties.firstLineInParagraph = true;
-            //while (textOffset <= visualLine.VisualLengthWithEndOfLineMarker)
-            //{
-            //    TextLine textLine = formatter.FormatLine(
-            //        textSource,
-            //        textOffset,
-            //        availableSize.Width,
-            //        paragraphProperties,
-            //        lastLineBreak
-            //    );
-            //    textLines.Add(textLine);
-            //    textOffset += textLine.Length;
+            //paragraphProperties.indent = 0;
+            //paragraphProperties.firstLineInParagraph = true;
+            while (textOffset <= visualLine.VisualLengthWithEndOfLineMarker)
+            {
+                //TextLine textLine = formatter.FormatLine(
+                //    textSource,
+                //    textOffset,
+                //    availableSize.Width,
+                //    null,
+                //    lastLineBreak
+                //);
+                //textLines.Add(textLine);
+                //textOffset += textLine.Length;
 
-            //    // exit loop so that we don't do the indentation calculation if there's only a single line
-            //    if (textOffset >= visualLine.VisualLengthWithEndOfLineMarker)
-            //        break;
+                // exit loop so that we don't do the indentation calculation if there's only a single line
+                if (textOffset >= visualLine.VisualLengthWithEndOfLineMarker)
+                    break;
 
-            //    if (paragraphProperties.firstLineInParagraph)
-            //    {
-            //        paragraphProperties.firstLineInParagraph = false;
+                //if (paragraphProperties.firstLineInParagraph)
+                //{
+                //    paragraphProperties.firstLineInParagraph = false;
 
-            //        TextEditorOptions options = this.Options;
-            //        double indentation = 0;
-            //        if (options.InheritWordWrapIndentation)
-            //        {
-            //            // determine indentation for next line:
-            //            int indentVisualColumn = GetIndentationVisualColumn(visualLine);
-            //            if (indentVisualColumn > 0 && indentVisualColumn < textOffset)
-            //            {
-            //                indentation = textLine.GetDistanceFromCharacterHit(new CharacterHit(indentVisualColumn, 0));
-            //            }
-            //        }
-            //        indentation += options.WordWrapIndentation;
-            //        // apply the calculated indentation unless it's more than half of the text editor size:
-            //        if (indentation > 0 && indentation * 2 < availableSize.Width)
-            //            paragraphProperties.indent = indentation;
-            //    }
-            //    lastLineBreak = textLine.GetTextLineBreak();
-            //}
+                //    TextEditorOptions options = this.Options;
+                //    double indentation = 0;
+                //    if (options.InheritWordWrapIndentation)
+                //    {
+                //        // determine indentation for next line:
+                //        int indentVisualColumn = GetIndentationVisualColumn(visualLine);
+                //        if (indentVisualColumn > 0 && indentVisualColumn < textOffset)
+                //        {
+                //            //indentation = textLine.GetDistanceFromCharacterHit(new CharacterHit(indentVisualColumn, 0));
+                //        }
+                //    }
+                //    indentation += options.WordWrapIndentation;
+                //    // apply the calculated indentation unless it's more than half of the text editor size:
+                //    if (indentation > 0 && indentation * 2 < availableSize.Width)
+                //        paragraphProperties.indent = indentation;
+                //}
+                //lastLineBreak = textLine.GetTextLineBreak();
+            }
+
             //visualLine.SetTextLines(textLines);
-            //heightTree.SetHeight(visualLine.FirstDocumentLine, visualLine.Height);
-            //return visualLine;
+            heightTree.SetHeight(visualLine.FirstDocumentLine, visualLine.Height);
+            return visualLine;
         }
 
         /// <summary>
@@ -1005,80 +1011,112 @@
             return new Size(Math.Min(availableSize.Width, maxWidth), Math.Min(availableSize.Height, heightTreeHeight));
         }
 
+        //TextFormatter formatter;
+
+        internal double FontSize
+        {
+            get
+            {
+                return (double)GetValue(TextBlock.FontSizeProperty);
+            }
+        }
+
+        TextRunProperties CreateGlobalTextRunProperties()
+        {
+            var p = new GlobalTextRunProperties();
+            //p.typeface = this.CreateTypeface();
+            p.fontRenderingEmSize = FontSize;
+            p.foregroundBrush = (Brush)GetValue(TemplatedControl.ForegroundProperty);
+            //ExtensionMethods.CheckIsFrozen(p.foregroundBrush);
+            p.cultureInfo = CultureInfo.CurrentCulture;
+            return p;
+        }
+
+        VisualLineTextParagraphProperties CreateParagraphProperties(TextRunProperties defaultTextRunProperties)
+        {
+            return new VisualLineTextParagraphProperties
+            {
+                //defaultTextRunProperties = defaultTextRunProperties,
+                //textWrapping = canHorizontallyScroll ? TextWrapping.NoWrap : TextWrapping.Wrap,
+                //tabSize = Options.IndentationSize * WideSpaceWidth
+            };
+        }
+
         /// <summary>
 		/// Build all VisualLines in the visible range.
 		/// </summary>
 		/// <returns>Width the longest line</returns>
 		double CreateAndMeasureVisualLines(Size availableSize)
         {
-            throw new Exception("Port to perspex.");
+            //throw new Exception("Port to perspex.");
 
-            //TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
-            //VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
+            TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
+            VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 
-            //Debug.WriteLine("Measure availableSize=" + availableSize + ", scrollOffset=" + scrollOffset);
-            //var firstLineInView = heightTree.GetLineByVisualPosition(scrollOffset.Y);
+            Debug.WriteLine("Measure availableSize=" + availableSize + ", scrollOffset=" + scrollOffset);
+            var firstLineInView = heightTree.GetLineByVisualPosition(scrollOffset.Y);
 
-            //// number of pixels clipped from the first visual line(s)
-            //clippedPixelsOnTop = scrollOffset.Y - heightTree.GetVisualPosition(firstLineInView);
-            //// clippedPixelsOnTop should be >= 0, except for floating point inaccurracy.
-            //Debug.Assert(clippedPixelsOnTop >= -ExtensionMethods.Epsilon);
+            // number of pixels clipped from the first visual line(s)
+            clippedPixelsOnTop = scrollOffset.Y - heightTree.GetVisualPosition(firstLineInView);
+            // clippedPixelsOnTop should be >= 0, except for floating point inaccurracy.
+            Debug.Assert(clippedPixelsOnTop >= -ExtensionMethods.Epsilon);
 
-            //newVisualLines = new List<VisualLine>();
-
+            newVisualLines = new List<VisualLine>();
+            
             //if (VisualLineConstructionStarting != null)
             //    VisualLineConstructionStarting(this, new VisualLineConstructionStartEventArgs(firstLineInView));
 
-            //var elementGeneratorsArray = elementGenerators.ToArray();
+            var elementGeneratorsArray = elementGenerators.ToArray();
             //var lineTransformersArray = lineTransformers.ToArray();
-            //var nextLine = firstLineInView;
-            //double maxWidth = 0;
-            //double yPos = -clippedPixelsOnTop;
-            //while (yPos < availableSize.Height && nextLine != null)
-            //{
-            //    VisualLine visualLine = GetVisualLine(nextLine.LineNumber);
-            //    if (visualLine == null)
-            //    {
-            //        visualLine = BuildVisualLine(nextLine,
-            //                                     globalTextRunProperties, paragraphProperties,
-            //                                     elementGeneratorsArray, lineTransformersArray,
-            //                                     availableSize);
-            //    }
+            var nextLine = firstLineInView;
+            double maxWidth = 0;
+            double yPos = -clippedPixelsOnTop;
+            while (yPos < availableSize.Height && nextLine != null)
+            {
+                VisualLine visualLine = GetVisualLine(nextLine.LineNumber);
+                if (visualLine == null)
+                {
+                    visualLine = BuildVisualLine(nextLine,
+                                                 globalTextRunProperties, paragraphProperties,
+                                                 elementGeneratorsArray, new IVisualLineTransformer[0],
+                                                 availableSize);
+                }
 
-            //    visualLine.VisualTop = scrollOffset.Y + yPos;
+                visualLine.VisualTop = scrollOffset.Y + yPos;
 
-            //    nextLine = visualLine.LastDocumentLine.NextLine;
+                nextLine = visualLine.LastDocumentLine.NextLine;
 
-            //    yPos += visualLine.Height;
+                yPos += visualLine.Height;
 
-            //    foreach (TextLine textLine in visualLine.TextLines)
-            //    {
-            //        if (textLine.WidthIncludingTrailingWhitespace > maxWidth)
-            //            maxWidth = textLine.WidthIncludingTrailingWhitespace;
-            //    }
+                //foreach (TextLine textLine in visualLine.TextLines)
+                //{
+                //    if (textLine.WidthIncludingTrailingWhitespace > maxWidth)
+                //        maxWidth = textLine.WidthIncludingTrailingWhitespace;
+                //}
 
-            //    newVisualLines.Add(visualLine);
-            //}
+                newVisualLines.Add(visualLine);
+            }
 
-            //foreach (VisualLine line in allVisualLines)
-            //{
-            //    Debug.Assert(line.IsDisposed == false);
-            //    if (!newVisualLines.Contains(line))
-            //        DisposeVisualLine(line);
-            //}
+            foreach (VisualLine line in allVisualLines)
+            {
+                Debug.Assert(line.IsDisposed == false);
+                if (!newVisualLines.Contains(line))
+                    DisposeVisualLine(line);
+            }
 
-            //allVisualLines = newVisualLines;
-            //// visibleVisualLines = readonly copy of visual lines
-            //visibleVisualLines = new ReadOnlyCollection<VisualLine>(newVisualLines.ToArray());
-            //newVisualLines = null;
+            allVisualLines = newVisualLines;
+            // visibleVisualLines = readonly copy of visual lines
+            visibleVisualLines = new ReadOnlyCollection<VisualLine>(newVisualLines.ToArray());
+            newVisualLines = null;
 
-            //if (allVisualLines.Any(line => line.IsDisposed))
-            //{
-            //    throw new InvalidOperationException("A visual line was disposed even though it is still in use.\n" +
-            //                                        "This can happen when Redraw() is called during measure for lines " +
-            //                                        "that are already constructed.");
-            //}
-            //return maxWidth;
+            if (allVisualLines.Any(line => line.IsDisposed))
+            {
+                throw new InvalidOperationException("A visual line was disposed even though it is still in use.\n" +
+                                                    "This can happen when Redraw() is called during measure for lines " +
+                                                    "that are already constructed.");
+            }
+
+            return maxWidth;
         }
 
         private void CaretTimerTick(object sender, EventArgs e)

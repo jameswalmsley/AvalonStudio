@@ -3,8 +3,8 @@
     using Document;
     using System;
     using System.Diagnostics;
-    using System.Windows.Media.TextFormatting;
     using Utils;
+    using Perspex.Media.TextFormatting;
 
     /// <summary>
     /// WPF TextSource implementation that creates TextRuns for a VisualLine.
@@ -21,6 +21,7 @@
         public TextDocument Document { get; set; }
         public TextRunProperties GlobalTextRunProperties { get; set; }
 
+
         public override TextRun GetTextRun(int textSourceCharacterIndex)
         {
             try
@@ -31,13 +32,13 @@
                         && textSourceCharacterIndex < element.VisualColumn + element.VisualLength)
                     {
                         int relativeOffset = textSourceCharacterIndex - element.VisualColumn;
-                        TextRun run = element.CreateTextRun(textSourceCharacterIndex, this);
-                        if (run == null)
-                            throw new ArgumentNullException(element.GetType().Name + ".CreateTextRun");
-                        if (run.Length == 0)
-                            throw new ArgumentException("The returned TextRun must not have length 0.", element.GetType().Name + ".Length");
-                        if (relativeOffset + run.Length > element.VisualLength)
-                            throw new ArgumentException("The returned TextRun is too long.", element.GetType().Name + ".CreateTextRun");
+                        //TextRun run = element.CreateTextRun(textSourceCharacterIndex, this);
+                        //if (run == null)
+                        //    throw new ArgumentNullException(element.GetType().Name + ".CreateTextRun");
+                        //if (run.Length == 0)
+                        //    throw new ArgumentException("The returned TextRun must not have length 0.", element.GetType().Name + ".Length");
+                        //if (relativeOffset + run.Length > element.VisualLength)
+                        //    throw new ArgumentException("The returned TextRun is too long.", element.GetType().Name + ".CreateTextRun");
                        
                         //TODO port inline objects to Perspex.
                         // InlineObjectRun inlineRun = run as InlineObjectRun;
@@ -48,14 +49,14 @@
                         //    TextView.AddInlineObject(inlineRun);
                         //}
 
-                        return run;
+                        return null;
                     }
                 }
                 if (TextView.Options.ShowEndOfLine && textSourceCharacterIndex == VisualLine.VisualLength)
                 {
                     return CreateTextRunForNewLine();
                 }
-                return new TextEndOfParagraph(1);
+                return null;// TextEndOfParagraph(1);
             }
             catch (Exception ex)
             {
@@ -86,33 +87,33 @@
             //return new FormattedTextRun(new FormattedTextElement(TextView.cachedElements.GetTextForNonPrintableCharacter(newlineText, this), 0), GlobalTextRunProperties);
         }
 
-        public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int textSourceCharacterIndexLimit)
-        {
-            try
-            {
-                foreach (VisualLineElement element in VisualLine.Elements)
-                {
-                    if (textSourceCharacterIndexLimit > element.VisualColumn
-                        && textSourceCharacterIndexLimit <= element.VisualColumn + element.VisualLength)
-                    {
-                        TextSpan<CultureSpecificCharacterBufferRange> span = element.GetPrecedingText(textSourceCharacterIndexLimit, this);
-                        if (span == null)
-                            break;
-                        int relativeOffset = textSourceCharacterIndexLimit - element.VisualColumn;
-                        if (span.Length > relativeOffset)
-                            throw new ArgumentException("The returned TextSpan is too long.", element.GetType().Name + ".GetPrecedingText");
-                        return span;
-                    }
-                }
-                CharacterBufferRange empty = CharacterBufferRange.Empty;
-                return new TextSpan<CultureSpecificCharacterBufferRange>(empty.Length, new CultureSpecificCharacterBufferRange(null, empty));
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                throw;
-            }
-        }
+        //public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int textSourceCharacterIndexLimit)
+        //{
+        //    try
+        //    {
+        //        foreach (VisualLineElement element in VisualLine.Elements)
+        //        {
+        //            if (textSourceCharacterIndexLimit > element.VisualColumn
+        //                && textSourceCharacterIndexLimit <= element.VisualColumn + element.VisualLength)
+        //            {
+        //                TextSpan<CultureSpecificCharacterBufferRange> span = element.GetPrecedingText(textSourceCharacterIndexLimit, this);
+        //                if (span == null)
+        //                    break;
+        //                int relativeOffset = textSourceCharacterIndexLimit - element.VisualColumn;
+        //                if (span.Length > relativeOffset)
+        //                    throw new ArgumentException("The returned TextSpan is too long.", element.GetType().Name + ".GetPrecedingText");
+        //                return span;
+        //            }
+        //        }
+        //        CharacterBufferRange empty = CharacterBufferRange.Empty;
+        //        return new TextSpan<CultureSpecificCharacterBufferRange>(empty.Length, new CultureSpecificCharacterBufferRange(null, empty));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex.ToString());
+        //        throw;
+        //    }
+        //}
 
         public override int GetTextEffectCharacterIndexFromTextSourceCharacterIndex(int textSourceCharacterIndex)
         {

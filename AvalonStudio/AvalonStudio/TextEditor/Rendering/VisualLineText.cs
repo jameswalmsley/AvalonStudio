@@ -46,12 +46,14 @@
         /// <inheritdoc/>
         public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException("context");
+            throw new Exception("Port to perspex");
 
-            int relativeOffset = startVisualColumn - VisualColumn;
-            StringSegment text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
-            return new TextCharacters(text.Text, text.Offset, text.Count, this.TextRunProperties);
+            //if (context == null)
+            //    throw new ArgumentNullException("context");
+
+            //int relativeOffset = startVisualColumn - VisualColumn;
+            //StringSegment text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
+            //return new TextCharacters(text.Text.ToCharArray(), text.Offset, text.Count, this.TextRunProperties);
         }
 
         /// <inheritdoc/>

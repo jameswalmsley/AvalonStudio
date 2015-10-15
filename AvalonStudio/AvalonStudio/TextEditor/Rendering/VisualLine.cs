@@ -227,18 +227,18 @@
             {
                 transformer.Transform(context, elements);
             }
-            // For some strange reason, WPF requires that either all or none of the typography properties are set.
-            if (elements.Any(e => e.TextRunProperties.TypographyProperties != null))
-            {
-                // Fix typographic properties
-                foreach (VisualLineElement element in elements)
-                {
-                    if (element.TextRunProperties.TypographyProperties == null)
-                    {
-                        element.TextRunProperties.SetTypographyProperties(new DefaultTextRunTypographyProperties());
-                    }
-                }
-            }
+            //// For some strange reason, WPF requires that either all or none of the typography properties are set.
+            //if (elements.Any(e => e.TextRunProperties.TypographyProperties != null))
+            //{
+            //    // Fix typographic properties
+            //    foreach (VisualLineElement element in elements)
+            //    {
+            //        if (element.TextRunProperties.TypographyProperties == null)
+            //        {
+            //            element.TextRunProperties.SetTypographyProperties(new DefaultTextRunTypographyProperties());
+            //        }
+            //    }
+            //}
             phase = LifetimePhase.Live;
         }
 
