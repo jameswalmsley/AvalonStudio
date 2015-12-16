@@ -23,7 +23,7 @@ namespace AvalonStudio
         public static void AttachDevTools(Window window)
         {
 #if DEBUG
-            DevTools.Attach(window);
+            //DevTools.Attach(window);
 #endif
         }
     }

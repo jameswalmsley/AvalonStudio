@@ -248,6 +248,7 @@
             intellisenseStartedAt = editorViewModel.CaretIndex;
             IsVisible = false;
             currentFilter = string.Empty;
+            SelectedCompletion = noSelectedCompletion;
         }
 
         public async void OnKeyUp(KeyEventArgs e)

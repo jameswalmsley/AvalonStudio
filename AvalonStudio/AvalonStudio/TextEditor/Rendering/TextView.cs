@@ -224,7 +224,6 @@
         private bool _caretBlink;
         #endregion
 
-
         #region Private Methods
         private void GenerateTextProperties()
         {

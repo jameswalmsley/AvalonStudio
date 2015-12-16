@@ -30,39 +30,39 @@
         {
             if (topHorizontalGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.North);
+                //BeginResizeDrag(WindowEdge.North);
             }
             else if (bottomHorizontalGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.South);
+               // BeginResizeDrag(WindowEdge.South);
             }
             else if (leftVerticalGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.West);
+                //BeginResizeDrag(WindowEdge.West);
             }
             else if (rightVerticalGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.East);
+                //BeginResizeDrag(WindowEdge.East);
             }
             else if(topLeftGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.NorthWest);
+                //BeginResizeDrag(WindowEdge.NorthWest);
             }
             else if(bottomLeftGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.SouthWest);
+                //BeginResizeDrag(WindowEdge.SouthWest);
             }
             else if (topRightGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.NorthEast);
+                //BeginResizeDrag(WindowEdge.NorthEast);
             }
             else if(bottomRightGrip.IsPointerOver)
             {
-                BeginResizeDrag(WindowEdge.SouthEast);
+               // BeginResizeDrag(WindowEdge.SouthEast);
             }
             else if (titleBar.IsPointerOver)
             {
-                BeginMoveDrag();
+                //BeginMoveDrag();
             }
 
             base.OnPointerPressed(e);
