@@ -33,6 +33,57 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Perspex.Animation">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Animation.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Application">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Application.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Base">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Controls">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Diagnostics">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Diagnostics.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Direct2D1">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.HtmlRenderer">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.HtmlRenderer.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Input">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Interactivity">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Layout">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Layout.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Markup">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Markup.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Markup.Xaml">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Markup.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.ReactiveUI">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.SceneGraph">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.SceneGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Styling">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Styling.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Themes.Default">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Themes.Default.dll</HintPath>
+    </Reference>
+    <Reference Include="Perspex.Win32">
+      <HintPath>..\..\Perspex\samples\XamlTestApplication\bin\Debug\Perspex.Win32.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>$(SharpDXPackageBinDir)\SharpDX.dll</HintPath>
     </Reference>
@@ -264,66 +315,6 @@
     <ProjectReference Include="..\..\nclang\NClang\NClang.csproj">
       <Project>{5ae560f9-0e8e-488e-b6c4-3c8196f9013a}</Project>
       <Name>NClang</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Markup\Perspex.Markup.Xaml\Perspex.Markup.Xaml.csproj">
-      <Project>{3e53a01a-b331-47f3-b828-4a5717e77a24}</Project>
-      <Name>Perspex.Markup.Xaml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Markup\Perspex.Markup\Perspex.Markup.csproj">
-      <Project>{6417e941-21bc-467b-a771-0de389353ce6}</Project>
-      <Name>Perspex.Markup</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Animation\Perspex.Animation.csproj">
-      <Project>{d211e587-d8bc-45b9-95a4-f297c8fa5200}</Project>
-      <Name>Perspex.Animation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Application\Perspex.Application.csproj">
-      <Project>{799a7bb5-3c2c-48b6-85a7-406a12c420da}</Project>
-      <Name>Perspex.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Base\Perspex.Base.csproj">
-      <Project>{b09b78d8-9b26-48b0-9149-d64a2f120f3f}</Project>
-      <Name>Perspex.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Controls\Perspex.Controls.csproj">
-      <Project>{d2221c82-4a25-4583-9b43-d791e3f6820c}</Project>
-      <Name>Perspex.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Input\Perspex.Input.csproj">
-      <Project>{62024b2d-53eb-4638-b26b-85eeaa54866e}</Project>
-      <Name>Perspex.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Interactivity\Perspex.Interactivity.csproj">
-      <Project>{6b0ed19d-a08b-461c-a9d9-a9ee40b0c06b}</Project>
-      <Name>Perspex.Interactivity</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Layout\Perspex.Layout.csproj">
-      <Project>{42472427-4774-4c81-8aff-9f27b8e31721}</Project>
-      <Name>Perspex.Layout</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.ReactiveUI\Perspex.ReactiveUI.csproj">
-      <Project>{6417b24e-49c2-4985-8db2-3ab9d898ec91}</Project>
-      <Name>Perspex.ReactiveUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.SceneGraph\Perspex.SceneGraph.csproj">
-      <Project>{eb582467-6abb-43a1-b052-e981ba910e3a}</Project>
-      <Name>Perspex.SceneGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Styling\Perspex.Styling.csproj">
-      <Project>{f1baa01a-f176-4c6a-b39d-5b40bb1b148f}</Project>
-      <Name>Perspex.Styling</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Perspex.Themes.Default\Perspex.Themes.Default.csproj">
-      <Project>{3e10a5fa-e8da-48b1-ad44-6a5b6cb7750f}</Project>
-      <Name>Perspex.Themes.Default</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Windows\Perspex.Direct2D1\Perspex.Direct2D1.csproj">
-      <Project>{3e908f67-5543-4879-a1dc-08eace79b3cd}</Project>
-      <Name>Perspex.Direct2D1</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Perspex\src\Windows\Perspex.Win32\Perspex.Win32.csproj">
-      <Project>{811a76cf-1cf6-440f-963b-bbe31bd72a82}</Project>
-      <Name>Perspex.Win32</Name>
     </ProjectReference>
     <ProjectReference Include="..\AvalonStudio.Models\AvalonStudio.Models.csproj">
       <Project>{EACBFF14-438D-4311-8D8C-18E7E6769C8F}</Project>
