@@ -152,21 +152,16 @@
             var tokens = root.DescendantNodesAndTokensAndSelf();            
 
             foreach (var token in tokens)
-            {                
-                
-                var symbol = token.Kind();
-                Console.WriteLine(token.Kind() + ":" + token);
-                switch(token.Kind())
+            {
+                Console.WriteLine(token.GetType());
+                if(token.AsNode() is TypeDeclarationSyntax)
                 {
-                    case SyntaxKind.ClassDeclaration:                        
-                        result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = token.Span.Start, Length = token.Span.Length, Type = HighlightType.Keyword });
-                        break;
+                    var node = token.AsNode() as TypeDeclarationSyntax;
 
-                    case SyntaxKind.ClassKeyword:
-                        result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = token.Span.Start, Length = token.Span.Length, Type = HighlightType.UserType });
-                        break;
-                                                                
-                }                
+                    Console.WriteLine(node);
+                                                            
+                    result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = node.Identifier.Span.Start, Length = node.Identifier.Span.Length, Type = HighlightType.Keyword });
+                }                                      
             }
 
             result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = 0, Length = 22, Type = HighlightType.UserType });
