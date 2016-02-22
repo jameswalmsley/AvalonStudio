@@ -9,12 +9,13 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CSharp;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using System.IO;
     using TextEditor.Document;
     using TextEditor.Rendering;
     using System.Runtime.CompilerServices;
     using Rendering;
-
+    using Microsoft.CodeAnalysis.Text;
     class CSharpDataAssociation
     {
         public CSharpDataAssociation(TextDocument textDocument)
@@ -30,7 +31,7 @@
             DocumentLineTransformers.Add(TextMarkerService);            
         }
 
-        public SyntaxTree SyntaxTree { get; set; }
+        public CSharpSyntaxTree SyntaxTree { get; set; }
         public TextColoringTransformer TextColorizer { get; private set; }
         public TextMarkerService TextMarkerService { get; private set; }
         public List<IBackgroundRenderer> BackgroundRenderers { get; private set; }
@@ -94,7 +95,7 @@
 
             if (dataAssociation.SyntaxTree == null)
             {
-                //dataAssociation.SyntaxTree = GenerateTranslationUnit(sourceFile, unsavedFiles);
+                dataAssociation.SyntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(File.OpenRead(sourceFile.Location))) as CSharpSyntaxTree;                
             }
             else
             {
@@ -140,8 +141,33 @@
         public CodeAnalysisResults RunCodeAnalysis(ISourceFile file, List<UnsavedFile> unsavedFiles, Func<bool> interruptRequested)
         {
             var result = new CodeAnalysisResults();
-
+            
             var dataAssociation = GetAssociatedData(file);
+
+            var syntaxTree = GetAndParseTranslationUnit(file);
+
+            
+
+            var root = syntaxTree.GetCompilationUnitRoot();
+            var tokens = root.DescendantNodesAndTokensAndSelf();            
+
+            foreach (var token in tokens)
+            {                
+                
+                var symbol = token.Kind();
+                Console.WriteLine(token.Kind() + ":" + token);
+                switch(token.Kind())
+                {
+                    case SyntaxKind.ClassDeclaration:                        
+                        result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = token.Span.Start, Length = token.Span.Length, Type = HighlightType.Keyword });
+                        break;
+
+                    case SyntaxKind.ClassKeyword:
+                        result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = token.Span.Start, Length = token.Span.Length, Type = HighlightType.UserType });
+                        break;
+                                                                
+                }                
+            }
 
             result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = 0, Length = 22, Type = HighlightType.UserType });
 
