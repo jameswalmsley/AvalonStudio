@@ -13,6 +13,8 @@
     using TextEditor.Document;
     using TextEditor.Rendering;
     using System.Runtime.CompilerServices;
+    using Rendering;
+
     class CSharpDataAssociation
     {
         public CSharpDataAssociation(TextDocument textDocument)
@@ -21,15 +23,15 @@
             DocumentLineTransformers = new List<IDocumentLineTransformer>();
 
             // Maybe the C++ one can be shared?
-            //TextColorizer = new TextColoringTransformer(textDocument);
+            TextColorizer = new TextColoringTransformer(textDocument);
             TextMarkerService = new TextMarkerService(textDocument);
 
-            //DocumentLineTransformers.Add(TextColorizer);
+            DocumentLineTransformers.Add(TextColorizer);
             DocumentLineTransformers.Add(TextMarkerService);            
         }
 
         public SyntaxTree SyntaxTree { get; set; }
-        //public TextColoringTransformer TextColorizer { get; private set; }
+        public TextColoringTransformer TextColorizer { get; private set; }
         public TextMarkerService TextMarkerService { get; private set; }
         public List<IBackgroundRenderer> BackgroundRenderers { get; private set; }
         public List<IDocumentLineTransformer> DocumentLineTransformers { get; private set; }
@@ -37,7 +39,7 @@
 
     public class CSharpLanguageService : ILanguageService
     {
-        private static ConditionalWeakTable<ISourceFile, CSharpDataAssociation> dataAssociations = new ConditionalWeakTable<ISourceFile, CPlusPlusDataAssociation>();
+        private static ConditionalWeakTable<ISourceFile, CSharpDataAssociation> dataAssociations = new ConditionalWeakTable<ISourceFile, CSharpDataAssociation>();
 
         public CSharpLanguageService()
         {
@@ -137,7 +139,15 @@
 
         public CodeAnalysisResults RunCodeAnalysis(ISourceFile file, List<UnsavedFile> unsavedFiles, Func<bool> interruptRequested)
         {
-            throw new NotImplementedException();
+            var result = new CodeAnalysisResults();
+
+            var dataAssociation = GetAssociatedData(file);
+
+            result.SyntaxHighlightingData.Add(new SyntaxHighlightingData() { Start = 0, Length = 22, Type = HighlightType.UserType });
+
+            dataAssociation.TextColorizer.SetTransformations(result.SyntaxHighlightingData);
+
+            return result;
         }
 
         public void UnregisterSourceFile(ISourceFile file)
