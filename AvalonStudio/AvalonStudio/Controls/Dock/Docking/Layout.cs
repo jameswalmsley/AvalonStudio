@@ -46,6 +46,8 @@ namespace AvalonStudio.Controls.Dock.Docking
 			//EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted));
 		}
 
+		
+
 		public Layout()
 		{
 			//Loaded += (sender, args) => LoadedLayouts.Add(this);
@@ -82,6 +84,148 @@ namespace AvalonStudio.Controls.Dock.Docking
 			//var floatingItemContainerStyleSelectorBinding = new Binding("FloatingItemContainerStyleSelector") { Source = this };
 			//_floatingItems.SetBinding(ItemsControl.ItemContainerStyleSelectorProperty, floatingItemContainerStyleSelectorBinding);
 		}
+
+
+
+		public string Partition { get; set; }
+
+		public static readonly PerspexProperty<IInterLayoutClient> InterLayoutClientProperty =
+			PerspexProperty.Register<Layout, IInterLayoutClient>("InterLayoutClient");
+
+		public IInterLayoutClient InterLayoutClient
+		{
+			get { return GetValue(InterLayoutClientProperty); }
+			set { SetValue(InterLayoutClientProperty, value); }
+		}
+
+		public static readonly PerspexProperty<bool> IsParticipatingInDragProperty =
+			PerspexProperty.RegisterDirect<Layout, bool>("IsParticipatingInDrag", o => o.IsParticipatingInDrag,
+				(o, v) => o.IsParticipatingInDrag = v);
+
+		private bool _isParticipatingInDrag;
+
+		public bool IsParticipatingInDrag
+		{
+			get { return _isParticipatingInDrag; }
+			private set { SetAndRaise(IsParticipatingInDragProperty, ref _isParticipatingInDrag, value); }
+		}
+
+		public static readonly PerspexProperty<DataTemplate> BranchItemTemplateProperty =
+			PerspexProperty.Register<Layout, DataTemplate>("BranchItemTemplate");
+
+		public DataTemplate BranchItemTemplate
+		{
+			get { return GetValue(BranchItemTemplateProperty); }
+			set { SetValue(BranchItemTemplateProperty, value); }
+		}
+
+		public static readonly PerspexProperty<bool> IsFloatingDropZoneEnabledProperty =
+			PerspexProperty.Register<Layout, bool>("IsFloatingDropZoneEnabled");
+
+		public bool IsFloatingDropZoneEnabled
+		{
+			get { return GetValue(IsFloatingDropZoneEnabledProperty); }
+			set { SetValue(IsFloatingDropZoneEnabledProperty, value); }
+		}
+
+		public static readonly PerspexProperty<Thickness> FloatingItemsContainerMarginProperty =
+			PerspexProperty.Register<Layout, Thickness>("FloatingItemsContainerMargin");
+
+		public Thickness FloatingItemsContainerMargin
+		{
+			get { return GetValue(FloatingItemsContainerMarginProperty); }
+			set { SetValue(FloatingItemsContainerMarginProperty, value); }
+		}
+
+		public IEnumerable FloatingItems
+		{
+			get { return _floatingItems.Items; }
+		}
+
+
+		public static readonly PerspexProperty<Style> FloatingItemsControlStyleProperty =
+			PerspexProperty.Register<Layout, Style>("FloatingItemsControlStyle");
+
+		public Style FloatingItemsControlStyle
+		{
+			get { return GetValue(FloatingItemsControlStyleProperty); }
+			set { SetValue(FloatingItemsControlStyleProperty, value); }
+		}
+
+		public static readonly PerspexProperty<Style> FloatingItemsContainerStyleProperty =
+			PerspexProperty.Register<Layout, Style>("FloatingItemsContainerStyle");
+
+		public Style FloatingItemsContainerStyle
+		{
+			get { return GetValue(FloatingItemsContainerStyleProperty); }
+			set { SetValue(FloatingItemsContainerStyleProperty, value); }
+		}
+
+		public static readonly PerspexProperty<DataTemplate> FloatingItemTemplateProperty =
+			PerspexProperty.Register<Layout, DataTemplate>("FloatingItemTemplate");
+
+		public DataTemplate FloatingItemTemplate
+		{
+			get { return GetValue(FloatingItemTemplateProperty); }
+			set { SetValue(FloatingItemTemplateProperty, value); }
+		}
+
+		public static readonly PerspexProperty<string> FloatingItemHeaderMemberPathProperty =
+			PerspexProperty.Register<Layout, string>("FloatingItemHeaderMemberPath");
+
+		public string FloatingItemHeaderMemberPath
+		{
+			get { return GetValue(FloatingItemHeaderMemberPathProperty); }
+			set { SetValue(FloatingItemHeaderMemberPathProperty, value); }
+		}
+
+		public static readonly PerspexProperty<string> FloatingItemDisplayMemberPathProperty =
+			PerspexProperty.Register<Layout, string>("FloatingItemDisplayMemberPath");
+
+		public string FloatingItemDisplayMemberPath
+		{
+			get { return GetValue(FloatingItemDisplayMemberPathProperty); }
+			set { SetValue(FloatingItemDisplayMemberPathProperty, value); }
+		}
+
+		public static readonly PerspexProperty<ClosingFloatingItemCallback> ClosingFloatingItemCallbackProperty =
+			PerspexProperty.Register<Layout, ClosingFloatingItemCallback>("ClosingFloatingItemCallback");
+
+		public ClosingFloatingItemCallback ClosingFloatingItemCallback
+		{
+			get { return GetValue(ClosingFloatingItemCallbackProperty); }
+			set { SetValue(ClosingFloatingItemCallbackProperty, value); }
+		}
+
+		public static readonly AttachedProperty<bool> IsFloatingInLayoutProperty =
+			PerspexProperty.RegisterAttached<Layout, Control, bool>("IsFloatingInLayout");
+
+		
+
+		public static readonly PerspexProperty<DataTemplate> BranchTemplateProperty =
+			PerspexProperty.Register<Layout, DataTemplate>("BranchTemplate");
+
+		public DataTemplate BranchTemplate
+		{
+			get { return GetValue(BranchTemplateProperty); }
+			set { SetValue(BranchTemplateProperty, value); }
+		}
+
+		public static readonly DirectProperty<Layout, WindowState> FloatingItemStateProperty =
+			PerspexProperty.RegisterDirect<Layout, WindowState>("FloatingItemsState", o => o.FloatingItemState,
+				(o, v) => o.FloatingItemState = v);
+
+		private WindowState _floatingItemsState;
+
+		public WindowState FloatingItemState
+		{
+			get { return _floatingItemsState; }
+			set { SetAndRaise(FloatingItemStateProperty, ref _floatingItemsState, value); }
+		}
+
+		internal static readonly AttachedProperty<LocationSnapShot> LocationSnapShotProperty =
+			PerspexProperty.RegisterAttached<Layout, Control, LocationSnapShot>("LocationSnapShot");
+
 
 		/// <summary>
 		/// Helper method to get all the currently loaded layouts.
@@ -196,225 +340,6 @@ namespace AvalonStudio.Controls.Dock.Docking
 		}
 
 
-		public string Partition { get; set; }
-
-		public static readonly PerspexProperty<IInterLayoutClient> InterLayoutClientProperty =
-			PerspexProperty.Register<Layout, IInterLayoutClient>("InterLayoutClient");
-
-		public IInterLayoutClient InterLayoutClient
-		{
-			get { return GetValue(InterLayoutClientProperty); }
-			set { SetValue(InterLayoutClientProperty, value); }
-		}
-
-		internal static bool IsContainedWithinBranch(PerspexObject perspexObject)
-		{
-			do
-			{
-				perspexObject = ((IVisual)perspexObject).GetVisualParent() as PerspexObject;
-				if (perspexObject is Branch)
-					return true;
-			} while (perspexObject != null);
-			return false;
-		}
-
-
-		public static readonly PerspexProperty<bool> IsParticipatingInDragProperty =
-			PerspexProperty.RegisterDirect<Layout, bool>("IsParticipatingInDrag", o => o.IsParticipatingInDrag,
-				(o, v) => o.IsParticipatingInDrag = v);
-
-		private bool _isParticipatingInDrag;
-
-		public bool IsParticipatingInDrag
-		{
-			get { return _isParticipatingInDrag; }
-			private set { SetAndRaise(IsParticipatingInDragProperty, ref _isParticipatingInDrag, value); }
-		}
-
-		public static readonly PerspexProperty<DataTemplate> BranchItemTemplateProperty =
-			PerspexProperty.Register<Layout, DataTemplate>("BranchItemTemplate");
-
-		public DataTemplate BranchItemTemplate
-		{
-			get { return GetValue(BranchItemTemplateProperty); }
-			set { SetValue(BranchItemTemplateProperty, value); }
-		}
-
-		public static readonly PerspexProperty<bool> IsFloatingDropZoneEnabledProperty =
-			PerspexProperty.Register<Layout, bool>("IsFloatingDropZoneEnabled");
-
-		public bool IsFloatingDropZoneEnabled
-		{
-			get { return GetValue(IsFloatingDropZoneEnabledProperty); }
-			set { SetValue(IsFloatingDropZoneEnabledProperty, value); }
-		}
-
-		public static readonly PerspexProperty<Thickness> FloatingItemsContainerMarginProperty =
-			PerspexProperty.Register<Layout, Thickness>("FloatingItemsContainerMargin");
-
-		public Thickness FloatingItemsContainerMargin
-		{
-			get { return GetValue(FloatingItemsContainerMarginProperty); }
-			set { SetValue(FloatingItemsContainerMarginProperty, value); }
-		}
-
-		public IEnumerable FloatingItems
-		{
-			get { return _floatingItems.Items; }
-		}
-
-
-
-		public static readonly PerspexProperty<Style> FloatingItemsControlStyleProperty =
-			PerspexProperty.Register<Layout, Style>("FloatingItemsControlStyle");
-
-		public Style FloatingItemsControlStyle
-		{
-			get { return GetValue(FloatingItemsControlStyleProperty); }
-			set { SetValue(FloatingItemsControlStyleProperty, value); }
-		}
-
-		public static readonly PerspexProperty<Style> FloatingItemsContainerStyleProperty =
-			PerspexProperty.Register<Layout, Style>("FloatingItemsContainerStyle");
-
-		public Style FloatingItemsContainerStyle
-		{
-			get { return GetValue(FloatingItemsContainerStyleProperty); }
-			set { SetValue(FloatingItemsContainerStyleProperty, value); }
-		}
-
-		public static readonly PerspexProperty<DataTemplate> FloatingItemTemplateProperty =
-			PerspexProperty.Register<Layout, DataTemplate>("FloatingItemTemplate");
-
-		public DataTemplate FloatingItemTemplate
-		{
-			get { return GetValue(FloatingItemTemplateProperty); }
-			set { SetValue(FloatingItemTemplateProperty, value); }
-		}
-
-		public static readonly PerspexProperty<string> FloatingItemHeaderMemberPathProperty =
-			PerspexProperty.Register<Layout, string>("FloatingItemHeaderMemberPath");
-
-		public string FloatingItemHeaderMemberPath
-		{
-			get { return GetValue(FloatingItemHeaderMemberPathProperty); }
-			set { SetValue(FloatingItemHeaderMemberPathProperty, value); }
-		}
-
-		public static readonly PerspexProperty<string> FloatingItemDisplayMemberPathProperty =
-			PerspexProperty.Register<Layout, string>("FloatingItemDisplayMemberPath");
-
-		public string FloatingItemDisplayMemberPath
-		{
-			get { return GetValue(FloatingItemDisplayMemberPathProperty); }
-			set { SetValue(FloatingItemDisplayMemberPathProperty, value); }
-		}
-
-		public static readonly PerspexProperty<ClosingFloatingItemCallback> ClosingFloatingItemCallbackProperty =
-			PerspexProperty.Register<Layout, ClosingFloatingItemCallback>("ClosingFloatingItemCallback");
-
-		public ClosingFloatingItemCallback ClosingFloatingItemCallback
-		{
-			get { return GetValue(ClosingFloatingItemCallbackProperty); }
-			set { SetValue(ClosingFloatingItemCallbackProperty, value); }
-		}
-
-		public static readonly AttachedProperty<bool> IsFloatingInLayoutProperty =
-			PerspexProperty.RegisterAttached<Layout, Control, bool>("IsFloatingInLayout");
-
-		public static void SetIsFloatingInLayout(Control element, bool value)
-		{
-			element.SetValue(IsFloatingInLayoutProperty, value);
-		}
-
-		public static bool GetIsFloatingInLayout(Control element)
-		{
-			return element.GetValue(IsFloatingInLayoutProperty);
-		}
-
-		protected override void OnTemplateApplied(TemplateAppliedEventArgs e)
-		{
-			var floatingItemsContentPresenter = e.NameScope.Find<ContentPresenter>(FloatingContentPresenterPartName);
-			if (floatingItemsContentPresenter != null)
-				floatingItemsContentPresenter.Content = _floatingItems;
-
-			_dropZones[DropZoneLocation.Top] = e.NameScope.Find<DropZone>(TopDropZonePartName);
-			_dropZones[DropZoneLocation.Right] = e.NameScope.Find<DropZone>(RightDropZonePartName);
-			_dropZones[DropZoneLocation.Bottom] = e.NameScope.Find<DropZone>(BottomDropZonePartName);
-			_dropZones[DropZoneLocation.Left] = e.NameScope.Find<DropZone>(LeftDropZonePartName);
-			_dropZones[DropZoneLocation.Floating] = e.NameScope.Find<DropZone>(FloatingDropZonePartName);
-
-			base.OnTemplateApplied(e);
-		}
-
-		internal IEnumerable<AvalonViewItem> FloatingAvalonViewItems()
-		{
-			return _floatingItems.AvalonViewItems();
-		}
-
-		internal static void RestoreFloatingItemSnapShots(Control ancestor, IEnumerable<FloatingItemSnapShot> floatingItemSnapShots)
-		{
-			var layouts = ancestor.GetSelfAndVisualDescendents().OfType<Layout>().ToList();
-			foreach (var floatingDragablzItem in layouts.SelectMany(l => l.FloatingAvalonViewItems()))
-			{
-				var itemSnapShots = floatingItemSnapShots as FloatingItemSnapShot[] ?? floatingItemSnapShots.ToArray();
-				var floatingItemSnapShot = itemSnapShots.FirstOrDefault(
-					ss => ss.Content == floatingDragablzItem.Content);
-				if (floatingItemSnapShot != null)
-					floatingItemSnapShot.Apply(floatingDragablzItem);
-			}
-		}
-
-		// TODO DragStarted
-
-		private static void SetupParticipatingLayouts(AvalonViewItem avalonViewItem)
-		{
-			var sourceOfAvalonViewItemsControl = avalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
-			if (sourceOfAvalonViewItemsControl == null || (sourceOfAvalonViewItemsControl.Items as ICollection).Count != 1) return;
-
-			var draggingWindow = avalonViewItem.GetSelfAndVisualAncestors().OfType<Window>().First();
-			if (draggingWindow == null) return;
-
-			foreach (var loadedLayout in LoadedLayouts.Where(l =>
-				l.Partition == avalonViewItem.PartitionAtDragStart &&
-				!Equals(l.GetSelfAndVisualAncestors().OfType<Window>().FirstOrDefault(), draggingWindow)))
-
-			{
-				loadedLayout.IsParticipatingInDrag = true;
-			}
-		}
-
-		private void MonitorDropZones(Point cursorPos)
-		{
-			//var myWindow = this.GetSelfAndVisualAncestors().OfType<Window>().First();
-			//if (myWindow == null) return;
-
-			//foreach (var dropZone in _dropZones.Values.Where(dz => dz != null))
-			//{
-			//    TODO pointFromScreen not Implemented
-			//    var pointFromScreen = myWindow.PointFromScreen(cursorPos);
-
-			//    var pointRelativeToDropZone = myWindow.TranslatePoint(pointFromScreen, dropZone);
-			//    var inputHitTest = dropZone.InputHitTest(pointRelativeToDropZone);
-			//    TODO better halding when windows are layered over each other
-			//    if (inputHitTest != null)
-			//    {
-			//        if (_currentlyOfferedDropZone != null)
-			//            _currentlyOfferedDropZone.Item2.IsOffered = false;
-			//        dropZone.IsOffered = true;
-			//        _currentlyOfferedDropZone = new Tuple<Layout, DropZone>(this, dropZone);
-			//    }
-			//    else
-			//    {
-			//        dropZone.IsOffered = false;
-			//        if (_currentlyOfferedDropZone != null && _currentlyOfferedDropZone.Item2 == dropZone)
-			//            _currentlyOfferedDropZone = null;
-			//    }
-			//}
-
-			throw new NotImplementedException();
-		}
-
 		private static bool TryGetSourceTabControl(AvalonViewItem avalonViewItem, out AvalonViewControl avalonViewControl)
 		{
 			var sourceOfAvalonViewItemsControl = avalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
@@ -431,10 +356,10 @@ namespace AvalonStudio.Controls.Dock.Docking
 			//    throw new InvalidOperationException("InterLayoutClient is not set.");
 
 			//var sourceOfAvalonViewItemsControl = sourceAvalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
-			//if (sourceOfAvalonViewItemsControl == null) throw new ApplicationException("Unable to determin source items control.");
+			//if (sourceOfAvalonViewItemsControl == null) throw new ApplicationException("Unable to determine source items control.");
 
 			//var sourceTabControl = AvalonViewControl.GetOwnerOfHeaderItems(sourceOfAvalonViewItemsControl);
-			//if (sourceTabControl == null) throw new ApplicationException("Unable to determin source tab control.");
+			//if (sourceTabControl == null) throw new ApplicationException("Unable to determine source tab control.");
 
 			//var floatingItemSnapShots = sourceTabControl.GetSelfAndVisualDescendents()
 			//    .OfType<Layout>()
@@ -506,26 +431,6 @@ namespace AvalonStudio.Controls.Dock.Docking
 			throw new NotImplementedException();
 		}
 
-		public static readonly PerspexProperty<DataTemplate> BranchTemplateProperty =
-			PerspexProperty.Register<Layout, DataTemplate>("BranchTemplate");
-
-		public DataTemplate BranchTemplate
-		{
-			get { return GetValue(BranchTemplateProperty); }
-			set { SetValue(BranchTemplateProperty, value); }
-		}
-
-		public static readonly PerspexProperty<WindowState> FloatingItemStateProperty =
-			PerspexProperty.RegisterDirect<Layout, WindowState>("FloatingItemsState", o => o.FloatingItemState,
-				(o, v) => o.FloatingItemState = v);
-
-		private WindowState _floatingItemsState;
-
-		public WindowState FloatingItemState
-		{
-			get { return _floatingItemsState; }
-			set { SetAndRaise(FloatingItemStateProperty, ref _floatingItemsState, value); }
-		}
 
 		public static void SetFloatingItemState(Control control, WindowState state)
 		{
@@ -537,9 +442,120 @@ namespace AvalonStudio.Controls.Dock.Docking
 			return control.GetValue(FloatingItemStateProperty);
 		}
 
-		// TODO: Location Snapshot as Attached PerspexProperty
+		internal static void SetLocationSnapShot(Control control, LocationSnapShot state)
+		{
+			control.SetValue(LocationSnapShotProperty, state);
+		}
 
-		// TODO: More of the functions and events
+		internal static LocationSnapShot GetLocationSnapShot(Control control)
+		{
+			return control.GetValue(LocationSnapShotProperty);
+		}
+
+		private void MonitorDropZones(Point cursorPos)
+		{
+			//var myWindow = this.GetSelfAndVisualAncestors().OfType<Window>().First();
+			//if (myWindow == null) return;
+
+			//foreach (var dropZone in _dropZones.Values.Where(dz => dz != null))
+			//{
+			//    TODO pointFromScreen not Implemented
+			//    var pointFromScreen = myWindow.PointFromScreen(cursorPos);
+
+			//    var pointRelativeToDropZone = myWindow.TranslatePoint(pointFromScreen, dropZone);
+			//    var inputHitTest = dropZone.InputHitTest(pointRelativeToDropZone);
+			//    TODO better halding when windows are layered over each other
+			//    if (inputHitTest != null)
+			//    {
+			//        if (_currentlyOfferedDropZone != null)
+			//            _currentlyOfferedDropZone.Item2.IsOffered = false;
+			//        dropZone.IsOffered = true;
+			//        _currentlyOfferedDropZone = new Tuple<Layout, DropZone>(this, dropZone);
+			//    }
+			//    else
+			//    {
+			//        dropZone.IsOffered = false;
+			//        if (_currentlyOfferedDropZone != null && _currentlyOfferedDropZone.Item2 == dropZone)
+			//            _currentlyOfferedDropZone = null;
+			//    }
+			//}
+
+			throw new NotImplementedException();
+		}
+
+		public static void SetIsFloatingInLayout(Control element, bool value)
+		{
+			element.SetValue(IsFloatingInLayoutProperty, value);
+		}
+
+		public static bool GetIsFloatingInLayout(Control element)
+		{
+			return element.GetValue(IsFloatingInLayoutProperty);
+		}
+
+		protected override void OnTemplateApplied(TemplateAppliedEventArgs e)
+		{
+			var floatingItemsContentPresenter = e.NameScope.Find<ContentPresenter>(FloatingContentPresenterPartName);
+			if (floatingItemsContentPresenter != null)
+				floatingItemsContentPresenter.Content = _floatingItems;
+
+			_dropZones[DropZoneLocation.Top] = e.NameScope.Find<DropZone>(TopDropZonePartName);
+			_dropZones[DropZoneLocation.Right] = e.NameScope.Find<DropZone>(RightDropZonePartName);
+			_dropZones[DropZoneLocation.Bottom] = e.NameScope.Find<DropZone>(BottomDropZonePartName);
+			_dropZones[DropZoneLocation.Left] = e.NameScope.Find<DropZone>(LeftDropZonePartName);
+			_dropZones[DropZoneLocation.Floating] = e.NameScope.Find<DropZone>(FloatingDropZonePartName);
+
+			base.OnTemplateApplied(e);
+		}
+
+		internal IEnumerable<AvalonViewItem> FloatingAvalonViewItems()
+		{
+			return _floatingItems.AvalonViewItems();
+		}
+
+		internal static void RestoreFloatingItemSnapShots(Control ancestor, IEnumerable<FloatingItemSnapShot> floatingItemSnapShots)
+		{
+			var layouts = ancestor.GetSelfAndVisualDescendents().OfType<Layout>().ToList();
+			foreach (var floatingDragablzItem in layouts.SelectMany(l => l.FloatingAvalonViewItems()))
+			{
+				var itemSnapShots = floatingItemSnapShots as FloatingItemSnapShot[] ?? floatingItemSnapShots.ToArray();
+				var floatingItemSnapShot = itemSnapShots.FirstOrDefault(
+					ss => ss.Content == floatingDragablzItem.Content);
+				if (floatingItemSnapShot != null)
+					floatingItemSnapShot.Apply(floatingDragablzItem);
+			}
+		}
+
+		// TODO DragStarted
+
+		private static void SetupParticipatingLayouts(AvalonViewItem avalonViewItem)
+		{
+			var sourceOfAvalonViewItemsControl = avalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
+			if (sourceOfAvalonViewItemsControl == null || (sourceOfAvalonViewItemsControl.Items as ICollection).Count != 1) return;
+
+			var draggingWindow = avalonViewItem.GetSelfAndVisualAncestors().OfType<Window>().First();
+			if (draggingWindow == null) return;
+
+			foreach (var loadedLayout in LoadedLayouts.Where(l =>
+				l.Partition == avalonViewItem.PartitionAtDragStart &&
+				!Equals(l.GetSelfAndVisualAncestors().OfType<Window>().FirstOrDefault(), draggingWindow)))
+
+			{
+				loadedLayout.IsParticipatingInDrag = true;
+			}
+		}
+
+
+		internal static bool IsContainedWithinBranch(PerspexObject perspexObject)
+		{
+			do
+			{
+				perspexObject = ((IVisual)perspexObject).GetVisualParent() as PerspexObject;
+				if (perspexObject is Branch)
+					return true;
+			} while (perspexObject != null);
+			return false;
+		}
 
 		private bool IsHostingTab()
 		{
