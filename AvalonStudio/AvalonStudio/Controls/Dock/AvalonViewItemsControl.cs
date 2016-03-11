@@ -110,10 +110,10 @@ namespace AvalonStudio.Controls.Dock
 
 
 
-        protected override IItemContainerGenerator CreateItemContainerGenerator()
-        {
-            return new ItemContainerGenerator<AvalonViewItem>(this);
-        }
+        //protected override IItemContainerGenerator CreateItemContainerGenerator()
+        //{
+        //    return new ItemContainerGenerator<AvalonViewItem>(this);
+        //}
 
         //TODO Many of the drag and move events need to be added
     }
