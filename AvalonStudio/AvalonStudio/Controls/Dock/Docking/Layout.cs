@@ -21,7 +21,7 @@ namespace AvalonStudio.Controls.Dock.Docking
 {
     public delegate void ClosingFloatingItemCallback(ItemActionCallbackArgs<Layout> args);
 
-    public class Layout : TemplatedControl
+    public class Layout : ContentControl
     {
         private static readonly HashSet<Layout> LoadedLayouts = new HashSet<Layout>();
         private const string TopDropZonePartName = "PART_TopDropZone";
@@ -134,38 +134,71 @@ namespace AvalonStudio.Controls.Dock.Docking
         /// <remarks>The tab control to be split must be hosted in a layout control.</remarks>
         public static BranchResult Branch(AvalonViewControl avalonViewControl, Orientation orientation, bool makeSecond, double firstItemProportion)
         {
-            //if (firstItemProportion < 0.0 || firstItemProportion > 1.0) throw new ArgumentOutOfRangeException("firstItemProportion", "Must be >= 0.0 and <= 1.0");
+            if (firstItemProportion < 0.0 || firstItemProportion > 1.0) throw new ArgumentOutOfRangeException("firstItemProportion", "Must be >= 0.0 and <= 1.0");
 
-            //var locationReport = Find(avalonViewControl);
+            var locationReport = Find(avalonViewControl);
 
-            //Action<Branch> applier;
-            //object existingContent;
-            //if (!locationReport.IsLeaf)
-            //{
-            //    existingContent = locationReport.RootLayout.Content;
-            //    applier = branch => locationReport.RootLayout.Content = branch;
-            //}
-            //else if (!locationReport.IsSecondLeaf)
-            //{
-            //    existingContent = locationReport.ParentBranch.FirstItem;
-            //    applier = branch => locationReport.ParentBranch.FirstItem = branch;
-            //}
-            //else
-            //{
-            //    existingContent = locationReport.ParentBranch.SecondItem;
-            //    applier = branch => locationReport.ParentBranch.SecondItem = branch;
-            //}
+            Action<Branch> applier;
+            object existingContent;
+            if (!locationReport.IsLeaf)
+            {
+                existingContent = locationReport.RootLayout.Content;
+                applier = branch => locationReport.RootLayout.Content = branch;
+            }
+            else if (!locationReport.IsSecondLeaf)
+            {
+                existingContent = locationReport.ParentBranch.FirstItem;
+                applier = branch => locationReport.ParentBranch.FirstItem = branch;
+            }
+            else
+            {
+                existingContent = locationReport.ParentBranch.SecondItem;
+                applier = branch => locationReport.ParentBranch.SecondItem = branch;
+            }
 
-            //var selectedItem = avalonViewControl.SelectedItem;
-            //var branchResult = Branch(orientation, firstItemProportion, makeSecond, locationReport.RootLayout.BranchTemplate, existingContent, applier);
-            //avalonViewControl.SelectedItem = selectedItem;
-            //avalonViewControl.Dispatcher.BeginInvoke(new Action(() =>
-            //    avalonViewControl.SetCurrentValue(Selector.SelectedItemProperty, selectedItem)),
-            //    DispatcherPriority.Loaded);
+            var selectedItem = avalonViewControl.SelectedItem;
+            var branchResult = Branch(orientation, firstItemProportion, makeSecond, locationReport.RootLayout.BranchTemplate, existingContent, applier);
+            avalonViewControl.SelectedItem = selectedItem;
 
-            //return branchResult;
+            return branchResult;
+        }
 
-            throw new NotImplementedException();
+        private static BranchResult Branch(Orientation orientation, double proportion, bool makeSecond, DataTemplate branchTemplate, object existingContent, Action<Branch> applier)
+        {
+            var branchItem = new Branch
+            {
+                Orientation = orientation
+            };
+
+            var newContent = new ContentControl
+            {
+                Content = new object(),
+            };
+
+            newContent.DataTemplates.Add(branchTemplate);
+
+            if (!makeSecond)
+            {
+                branchItem.FirstItem = existingContent;
+                branchItem.SecondItem = newContent;
+            }
+            else
+            {
+                branchItem.FirstItem = newContent;
+                branchItem.SecondItem = existingContent;
+            }
+
+            branchItem.SetValue(Docking.Branch.FirstItemLengthProperty, new GridLength(proportion, GridUnitType.Star));
+            branchItem.SetValue(Docking.Branch.SecondItemLengthProperty, new GridLength(1 - proportion, GridUnitType.Star));
+
+            applier(branchItem);
+
+            var newAvalonViewControl = newContent.GetVisualChildren().OfType<AvalonViewControl>().FirstOrDefault();
+
+            if (newAvalonViewControl == null)
+                throw new ApplicationException("New AvalonViewControl was not generated inside branch.");
+
+            return new BranchResult(branchItem, newAvalonViewControl);
         }
 
 
@@ -182,16 +215,13 @@ namespace AvalonStudio.Controls.Dock.Docking
 
         internal static bool IsContainedWithinBranch(PerspexObject perspexObject)
         {
-            //do
-            //{
-            //    // Get parent of perspexObject
-            //    perspexObject = perspexObject;
-            //    if (perspexObject is Branch)
-            //        return true;
-            //} while (perspexObject != null);
-            //return false;
-
-            throw new NotImplementedException();
+            do
+            {
+                perspexObject = ((IVisual)perspexObject).GetVisualParent() as PerspexObject;
+                if (perspexObject is Branch)
+                    return true;
+            } while (perspexObject != null);
+            return false;
         }
 
 
@@ -295,17 +325,8 @@ namespace AvalonStudio.Controls.Dock.Docking
             set { SetValue(ClosingFloatingItemCallbackProperty, value); }
         }
 
-        // TODO: Attached Perspex Property
-        public static readonly PerspexProperty<bool> IsFloatingInLayoutProperty =
-            PerspexProperty.RegisterDirect<Layout, bool>("IsFloatingInLayout", o => o.IsFloatingInLayout);
-
-        private bool _isFloatingInLayout;
-
-        public bool IsFloatingInLayout
-        {
-            get { return _isFloatingInLayout; }
-            private set { SetAndRaise(IsFloatingInLayoutProperty, ref _isFloatingInLayout, value); }
-        }
+        public static readonly AttachedProperty<bool> IsFloatingInLayoutProperty =
+            PerspexProperty.RegisterAttached<Layout, Control, bool>("IsFloatingInLayout");
 
         public static void SetIsFloatingInLayout(Control element, bool value)
         {
@@ -355,7 +376,7 @@ namespace AvalonStudio.Controls.Dock.Docking
         private static void SetupParticipatingLayouts(AvalonViewItem avalonViewItem)
         {
             var sourceOfAvalonViewItemsControl = avalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
-            if (sourceOfAvalonViewItemsControl == null || sourceOfAvalonViewItemsControl.Items != 1) return;
+            if (sourceOfAvalonViewItemsControl == null || (sourceOfAvalonViewItemsControl.Items as ICollection).Count != 1) return;
 
             var draggingWindow = avalonViewItem.GetSelfAndVisualAncestors().OfType<Window>().First();
             if (draggingWindow == null) return;
@@ -371,31 +392,33 @@ namespace AvalonStudio.Controls.Dock.Docking
 
         private void MonitorDropZones(Point cursorPos)
         {
-            var myWindow = this.GetSelfAndVisualAncestors().OfType<Window>().First();
-            if (myWindow == null) return;
+            //var myWindow = this.GetSelfAndVisualAncestors().OfType<Window>().First();
+            //if (myWindow == null) return;
 
-            foreach (var dropZone in _dropZones.Values.Where(dz => dz != null))
-            {
-                // TODO pointFromScreen not Implemented
-                //var pointFromScreen = myWindow.PointFromScreen(cursorPos);
-                
-                //var pointRelativeToDropZone = myWindow.TranslatePoint(pointFromScreen, dropZone);
-                var inputHitTest = dropZone.InputHitTest(pointRelativeToDropZone);
-                //TODO better halding when windows are layered over each other
-                if (inputHitTest != null)
-                {
-                    if (_currentlyOfferedDropZone != null)
-                        _currentlyOfferedDropZone.Item2.IsOffered = false;
-                    dropZone.IsOffered = true;
-                    _currentlyOfferedDropZone = new Tuple<Layout, DropZone>(this, dropZone);
-                }
-                else
-                {
-                    dropZone.IsOffered = false;
-                    if (_currentlyOfferedDropZone != null && _currentlyOfferedDropZone.Item2 == dropZone)
-                        _currentlyOfferedDropZone = null;
-                }
-            }
+            //foreach (var dropZone in _dropZones.Values.Where(dz => dz != null))
+            //{
+            //    TODO pointFromScreen not Implemented
+            //    var pointFromScreen = myWindow.PointFromScreen(cursorPos);
+
+            //    var pointRelativeToDropZone = myWindow.TranslatePoint(pointFromScreen, dropZone);
+            //    var inputHitTest = dropZone.InputHitTest(pointRelativeToDropZone);
+            //    TODO better halding when windows are layered over each other
+            //    if (inputHitTest != null)
+            //    {
+            //        if (_currentlyOfferedDropZone != null)
+            //            _currentlyOfferedDropZone.Item2.IsOffered = false;
+            //        dropZone.IsOffered = true;
+            //        _currentlyOfferedDropZone = new Tuple<Layout, DropZone>(this, dropZone);
+            //    }
+            //    else
+            //    {
+            //        dropZone.IsOffered = false;
+            //        if (_currentlyOfferedDropZone != null && _currentlyOfferedDropZone.Item2 == dropZone)
+            //            _currentlyOfferedDropZone = null;
+            //    }
+            //}
+
+            throw new NotImplementedException();
         }
 
         private static bool TryGetSourceTabControl(AvalonViewItem avalonViewItem, out AvalonViewControl avalonViewControl)
@@ -410,76 +433,78 @@ namespace AvalonStudio.Controls.Dock.Docking
 
         private void Branch(DropZoneLocation location, AvalonViewItem sourceAvalonViewItem)
         {
-            if (InterLayoutClient == null)
-                throw new InvalidOperationException("InterLayoutClient is not set.");
+            //if (InterLayoutClient == null)
+            //    throw new InvalidOperationException("InterLayoutClient is not set.");
 
-            var sourceOfAvalonViewItemsControl = sourceAvalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
-            if (sourceOfAvalonViewItemsControl == null) throw new ApplicationException("Unable to determin source items control.");
+            //var sourceOfAvalonViewItemsControl = sourceAvalonViewItem.GetSelfAndLogicalAncestors().OfType<ItemsControl>().FirstOrDefault() as AvalonViewItemsControl;
+            //if (sourceOfAvalonViewItemsControl == null) throw new ApplicationException("Unable to determin source items control.");
 
-            var sourceTabControl = AvalonViewControl.GetOwnerOfHeaderItems(sourceOfAvalonViewItemsControl);
-            if (sourceTabControl == null) throw new ApplicationException("Unable to determin source tab control.");
+            //var sourceTabControl = AvalonViewControl.GetOwnerOfHeaderItems(sourceOfAvalonViewItemsControl);
+            //if (sourceTabControl == null) throw new ApplicationException("Unable to determin source tab control.");
 
-            var floatingItemSnapShots = sourceTabControl.GetSelfAndVisualDescendents()
-                .OfType<Layout>()
-                .SelectMany(l => l.FloatingAvalonViewItems().Select(FloatingItemSnapShot.Take))
-                .ToList();
+            //var floatingItemSnapShots = sourceTabControl.GetSelfAndVisualDescendents()
+            //    .OfType<Layout>()
+            //    .SelectMany(l => l.FloatingAvalonViewItems().Select(FloatingItemSnapShot.Take))
+            //    .ToList();
 
-            var sourceItemIndex = sourceOfAvalonViewItemsControl.ItemContainerGenerator.IndexFromContainer(sourceAvalonViewItem);
-            var sourceItem = sourceOfAvalonViewItemsControl.Items[sourceItemIndex];
-            sourceTabControl.RemoveItem(sourceAvalonViewItem);
+            //var sourceItemIndex = sourceOfAvalonViewItemsControl.ItemContainerGenerator.IndexFromContainer(sourceAvalonViewItem);
+            //var sourceItem = sourceOfAvalonViewItemsControl.Items[sourceItemIndex];
+            //sourceTabControl.RemoveItem(sourceAvalonViewItem);
 
-            var branchItem = new Branch
-            {
-                Orientation = (location == DropZoneLocation.Right || location == DropZoneLocation.Left) ? Orientation.Horizontal : Orientation.Vertical
-            };
+            //var branchItem = new Branch
+            //{
+            //    Orientation = (location == DropZoneLocation.Right || location == DropZoneLocation.Left) ? Orientation.Horizontal : Orientation.Vertical
+            //};
 
-            object newContent;
-            if (BranchTemplate == null)
-            {
-                var newTabHost = InterLayoutClient.GetNewHost(Partition, sourceTabControl);
-                if (newTabHost == null)
-                    throw new ApplicationException("InterLayoutClient did not provide a new tab host.");
-                newTabHost.AvalonViewControl.AddToSource(sourceItem);
-                newTabHost.AvalonViewControl.SelectedItem = sourceItem;
-                newContent = newTabHost.Container;
+            //object newContent;
+            //if (BranchTemplate == null)
+            //{
+            //    var newTabHost = InterLayoutClient.GetNewHost(Partition, sourceTabControl);
+            //    if (newTabHost == null)
+            //        throw new ApplicationException("InterLayoutClient did not provide a new tab host.");
+            //    newTabHost.AvalonViewControl.AddToSource(sourceItem);
+            //    newTabHost.AvalonViewControl.SelectedItem = sourceItem;
+            //    newContent = newTabHost.Container;
 
-                Dispatcher.UIThread.InvokeAsync(() => RestoreFloatingItemSnapShots(newTabHost.AvalonViewControl, floatingItemSnapShots), DispatcherPriority.Loaded);
-            }
-            else
-            {
-                newContent = new ContentControl
-                {
-                    Content = new object(),
-                    ContentTemplate = BranchTemplate,
-                };
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    //TODO might need to improve this a bit, make it a bit more declarative for complex trees
-                    var newTabControl =
-                        ((ContentControl) newContent).GetSelfAndLogicalAncestors()
-                            .OfType<AvalonViewControl>()
-                            .FirstOrDefault();
-                    if (newTabControl == null) return;
+            //    Dispatcher.UIThread.InvokeAsync(() => RestoreFloatingItemSnapShots(newTabHost.AvalonViewControl, floatingItemSnapShots), DispatcherPriority.Loaded);
+            //}
+            //else
+            //{
+            //    newContent = new ContentControl
+            //    {
+            //        Content = new object(),
+            //        ContentTemplate = BranchTemplate,
+            //    };
+            //    Dispatcher.UIThread.InvokeAsync(() =>
+            //    {
+            //        //TODO might need to improve this a bit, make it a bit more declarative for complex trees
+            //        var newTabControl =
+            //            ((ContentControl) newContent).GetSelfAndLogicalAncestors()
+            //                .OfType<AvalonViewControl>()
+            //                .FirstOrDefault();
+            //        if (newTabControl == null) return;
 
-                    newTabControl.DataContext = sourceTabControl.DataContext;
-                    newTabControl.AddToSource(sourceItem);
-                    newTabControl.SelectedItem = sourceItem;
-                    Dispatcher.UIThread.InvokeAsync(() => RestoreFloatingItemSnapShots(newTabControl, floatingItemSnapShots), DispatcherPriority.Loaded);
-                }, DispatcherPriority.Loaded);
-            }
+            //        newTabControl.DataContext = sourceTabControl.DataContext;
+            //        newTabControl.AddToSource(sourceItem);
+            //        newTabControl.SelectedItem = sourceItem;
+            //        Dispatcher.UIThread.InvokeAsync(() => RestoreFloatingItemSnapShots(newTabControl, floatingItemSnapShots), DispatcherPriority.Loaded);
+            //    }, DispatcherPriority.Loaded);
+            //}
 
-            if (location == DropZoneLocation.Right || location == DropZoneLocation.Bottom)
-            {
-                branchItem.FirstItem = Content;
-                branchItem.SecondItem = newContent;
-            }
-            else
-            {
-                branchItem.FirstItem = newContent;
-                branchItem.SecondItem = Content;
-            }
+            //if (location == DropZoneLocation.Right || location == DropZoneLocation.Bottom)
+            //{
+            //    branchItem.FirstItem = Content;
+            //    branchItem.SecondItem = newContent;
+            //}
+            //else
+            //{
+            //    branchItem.FirstItem = newContent;
+            //    branchItem.SecondItem = Content;
+            //}
 
-            Content = branchItem;
+            //Content = branchItem;
+
+            throw new NotImplementedException();
         }
 
         internal IEnumerable<AvalonViewItem> AvalonViewItems()
@@ -487,26 +512,35 @@ namespace AvalonStudio.Controls.Dock.Docking
             throw new NotImplementedException();
         }
 
-        public static readonly PerspexProperty<WindowState> FloatingItemsStateProperty =
-            PerspexProperty.RegisterDirect<Layout, WindowState>("FloatingItemsState", o => o.FloatingItemsState,
-                (o, v) => o.FloatingItemsState = v);
+        public static readonly PerspexProperty<DataTemplate> BranchTemplateProperty =
+            PerspexProperty.Register<Layout, DataTemplate>("BranchTemplate");
+
+        public DataTemplate BranchTemplate
+        {
+            get { return GetValue(BranchTemplateProperty); }
+            set { SetValue(BranchTemplateProperty, value); }
+        }
+
+        public static readonly PerspexProperty<WindowState> FloatingItemStateProperty =
+            PerspexProperty.RegisterDirect<Layout, WindowState>("FloatingItemsState", o => o.FloatingItemState,
+                (o, v) => o.FloatingItemState = v);
 
         private WindowState _floatingItemsState;
 
-        public WindowState FloatingItemsState
+        public WindowState FloatingItemState
         {
             get { return _floatingItemsState; }
-            set { SetAndRaise(FloatingItemsStateProperty, ref _floatingItemsState, value); }
+            set { SetAndRaise(FloatingItemStateProperty, ref _floatingItemsState, value); }
         }
 
         public static void SetFloatingItemState(Control control, WindowState state)
         {
-            control.SetValue(FloatingItemsStateProperty, state);
+            control.SetValue(FloatingItemStateProperty, state);
         }
 
-        public static WindowState GetFloatingItemsState(Control control)
+        public static WindowState GetFloatingItemState(Control control)
         {
-            return control.GetValue(FloatingItemsStateProperty);
+            return control.GetValue(FloatingItemStateProperty);
         }
 
         // TODO: Location Snapshot as Attached PerspexProperty
