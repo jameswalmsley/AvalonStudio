@@ -188,9 +188,11 @@
     <Compile Include="Controls\Dock\Docking\BranchResult.cs" />
     <Compile Include="Controls\Dock\Docking\DropZone.cs" />
     <Compile Include="Controls\Dock\Docking\DropZoneLocation.cs" />
+    <Compile Include="Controls\Dock\Docking\Extensions.cs" />
     <Compile Include="Controls\Dock\Docking\FInder.cs" />
     <Compile Include="Controls\Dock\Docking\FloatingItemSnapShot.cs" />
     <Compile Include="Controls\Dock\Docking\Layout.cs" />
+    <Compile Include="Controls\Dock\Docking\LayoutAccessor.cs" />
     <Compile Include="Controls\Dock\Docking\LocationReport.cs" />
     <Compile Include="Controls\Dock\Docking\LocationReportBuilder.cs" />
     <Compile Include="Controls\Dock\Docking\LocationReportException.cs" />
@@ -217,7 +219,6 @@
     <Compile Include="Controls\Dock\Util\ICancelable.cs" />
     <Compile Include="Controls\Dock\Util\SerialDisposable.cs" />
     <Compile Include="Controls\Editor\SymbolViewModel.cs" />
-
     <Compile Include="Controls\ErrorViewModel.cs" />
     <Compile Include="Controls\Editor.paml.cs">
       <DependentUpon>Editor.paml</DependentUpon>
