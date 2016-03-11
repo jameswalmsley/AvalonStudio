@@ -15,7 +15,7 @@
     using Toolchains;
     using Toolchains.Standard;
     using Perspex.Controls;
-
+    using Toolchains.GCC;
     public class GDBDebugger : IDebugger
     {
         public GDBDebugger()
@@ -167,28 +167,24 @@
         }
 
         internal string SendCommand(Command command, Int32 timeout)
-        {
+        {            
             string result = string.Empty;
+            transmitSemaphore.WaitOne();
+            SetCommand(command);
 
-            //Task.Factory.StartNew(() =>
+            if (DebugMode)
             {
-                transmitSemaphore.WaitOne();
-                SetCommand(command);
+                console.WriteLine("[Sending] " + command.Encode());
+            }
 
-                if (DebugMode)
-                {
-                    console.WriteLine("[Sending] " + command.Encode());
-                }
+            input.WriteLine(command.Encode());
+            input.Flush();
 
-                input.WriteLine(command.Encode());
-                input.Flush();
+            result = WaitForResponse(-1);
 
-                result = WaitForResponse(-1);
+            ClearCommand();
 
-                ClearCommand();
-
-                transmitSemaphore.Release();
-            }//).Wait();
+            transmitSemaphore.Release();
 
             return result;
         }
@@ -324,7 +320,10 @@
 
             if (Stopped != null && StoppedEventIsEnabled)
             {
-                Stopped(this, stopRecord);
+                Task.Factory.StartNew(() =>
+                {
+                    Stopped(this, stopRecord);
+                });
             }
         }
 
@@ -374,7 +373,7 @@
         /// <summary>
         /// This method is not supported by embedded targets. Use continue instead.
         /// </summary>
-        public void Run()
+        public virtual void Run()
         {
             if (CurrentState != DebuggerState.Running)
             {
@@ -536,8 +535,18 @@
 
             // This information should be part of this extension... or configurable internally?
             // This maybe indicates that debuggers are part of toolchain?
-            startInfo.FileName = Path.Combine(Platform.ReposDirectory, "AvalonStudio.Toolchains.LocalGCC", "bin", "gdb" + Platform.ExecutableExtension);
-            startInfo.Arguments = string.Format("\"{0}\" --interpreter=mi", Path.Combine(project.CurrentDirectory, project.Executable).ToPlatformPath());
+
+            if(toolchain is GCCToolchain)
+            {
+                startInfo.FileName = (toolchain as GCCToolchain).GDBExecutable;
+            }
+            else
+            {
+                console.WriteLine("[GDB] - Error GDB is not able to debug projects compiled on this kind of toolchain (" + toolchain.GetType().ToString() + ")");
+                return false;
+            }
+
+            startInfo.Arguments = string.Format("--interpreter=mi \"{0}\"", Path.Combine(project.CurrentDirectory, project.Executable).ToPlatformPath());
 
             if (!File.Exists(startInfo.FileName))
             {
@@ -583,10 +592,7 @@
                {
                    if (e.Data != null)
                    {
-                       Task.Factory.StartNew(() =>
-                       {
-                           ProcessOutput(e.Data);
-                       });
+                       ProcessOutput(e.Data);
                    }
                };
 

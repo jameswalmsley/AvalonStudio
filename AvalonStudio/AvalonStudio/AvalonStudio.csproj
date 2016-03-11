@@ -273,6 +273,11 @@
     <Compile Include="Controls\ReferenceViewModel.cs">
       <DependentUpon>SolutionExplorer.paml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Registers.xaml.cs">
+      <DependentUpon>Registers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RegistersViewModel.cs" />
+    <Compile Include="Controls\RegisterViewModel.cs" />
     <Compile Include="Controls\SolutionExplorerView.paml.cs">
       <DependentUpon>SolutionExplorer.paml</DependentUpon>
     </Compile>
@@ -337,7 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ModalDialog.paml" />
     <EmbeddedResource Include="Controls\PackageManagerDialog.paml" />
-    <EmbeddedResource Include="Controls\SolutionExplorer.paml" />
+    <EmbeddedResource Include="Controls\SolutionExplorer.paml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\StatusBar.paml" />
     <EmbeddedResource Include="Controls\ToolBar.paml" />
     <EmbeddedResource Include="Controls\Intellisense.paml">
@@ -362,6 +369,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AvalonStudio.Debugging.GDB.JLink\AvalonStudio.Debugging.GDB.JLink.csproj">
+      <Project>{eb735b57-518a-4dc5-8dff-ca6d5db604d2}</Project>
+      <Name>AvalonStudio.Debugging.GDB.JLink</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AvalonStudio.Debugging.GDB.Local\AvalonStudio.Debugging.GDB.Local.csproj">
       <Project>{0ead4429-5b5a-4ebb-87b6-ea91ce86b09e}</Project>
       <Name>AvalonStudio.Debugging.GDB.Local</Name>
@@ -5462,6 +5473,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Themes\BaseDark.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\Registers.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
