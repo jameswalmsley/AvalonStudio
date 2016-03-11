@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Perspex;
+﻿using Perspex;
 using Perspex.Controls;
 using Perspex.Controls.Presenters;
 using Perspex.Controls.Primitives;

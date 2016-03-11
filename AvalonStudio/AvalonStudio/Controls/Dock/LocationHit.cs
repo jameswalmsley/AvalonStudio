@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AvalonStudio.Controls.Dock
+﻿namespace AvalonStudio.Controls.Dock
 {
     /// <summary>
     /// Specifies where an item should appear when added to tab control, as the headers order do not

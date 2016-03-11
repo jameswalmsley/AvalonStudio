@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Perspex;
 using Perspex.Controls;
 using Perspex.Markup.Xaml.Templates;
 using Perspex.Styling;
-using Perspex.Utilities;
 
 namespace AvalonStudio.Controls.Dock
 {

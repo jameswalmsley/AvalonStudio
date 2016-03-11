@@ -2,19 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Perspex;
 using Perspex.Controls;
 using Perspex.Controls.Presenters;
 using Perspex.Controls.Primitives;
-using Perspex.Controls.Templates;
-using Perspex.Input;
 using Perspex.LogicalTree;
 using Perspex.Markup.Xaml.Templates;
 using Perspex.Styling;
-using Perspex.Threading;
 using Perspex.VisualTree;
 
 namespace AvalonStudio.Controls.Dock.Docking
@@ -546,6 +540,13 @@ namespace AvalonStudio.Controls.Dock.Docking
 		// TODO: Location Snapshot as Attached PerspexProperty
 
 		// TODO: More of the functions and events
+
+		private bool IsHostingTab()
+		{
+			return this.GetVisualChildren().OfType<AvalonViewControl>()
+				.FirstOrDefault(t => t.InterTabController != null && t.InterTabController.Partition == Partition)
+				!= null;
+		}
 
 	}
 }
