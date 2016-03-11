@@ -90,12 +90,13 @@ namespace AvalonStudio.Controls.Dock.Docking
             return (1 / (FirstItemLength.Value + SecondItemLength.Value)) * FirstItemLength.Value;
         }
 
-        protected override void OnTemplateApplied(INameScope nameScope)
+        protected override void OnTemplateApplied(TemplateAppliedEventArgs e)
         {
-            base.OnTemplateApplied(nameScope);
+            base.OnTemplateApplied(e);
 
-            FirstContentPresenter = nameScope.Find<ContentPresenter>("PART_FirstContentPresenter");
-            SecondContentPresenter = nameScope.Find<ContentPresenter>("PART_SecondContentPresenter");
+            FirstContentPresenter = e.NameScope.Find<ContentPresenter>("PART_FirstContentPresenter");
+            SecondContentPresenter = e.NameScope.Find<ContentPresenter>("PART_SecondContentPresenter");
+
         }
 
         internal ContentPresenter FirstContentPresenter { get; private set; }
