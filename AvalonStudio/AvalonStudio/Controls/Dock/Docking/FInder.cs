@@ -8,7 +8,6 @@ namespace AvalonStudio.Controls.Dock.Docking
 {
     public class Finder
     {
-
         internal static LocationReport Find(AvalonViewControl avalonViewControl)
         {
             if (avalonViewControl == null) throw new ArgumentNullException("avalonViewControl");
@@ -30,7 +29,7 @@ namespace AvalonStudio.Controls.Dock.Docking
             }
 
             if (!locationReportBuilder.IsFound)
-                throw new LocationReportException("Instance not withinany layout.");
+                throw new LocationReportException("Instance not within any layout.");
 
             return locationReportBuilder.ToLocationReport();
         }
