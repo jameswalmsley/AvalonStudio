@@ -6,52 +6,52 @@ using System.Threading.Tasks;
 
 namespace AvalonStudio.Controls.Dock.Docking
 {
-    public class Finder
-    {
-        internal static LocationReport Find(AvalonViewControl avalonViewControl)
-        {
-            if (avalonViewControl == null) throw new ArgumentNullException("avalonViewControl");
+	public class Finder
+	{
+		internal static LocationReport Find(AvalonViewControl avalonViewControl)
+		{
+			if (avalonViewControl == null) throw new ArgumentNullException("avalonViewControl");
 
-            var locationReportBuilder = new LocationReportBuilder(avalonViewControl);
+			var locationReportBuilder = new LocationReportBuilder(avalonViewControl);
 
-            foreach (var loadedInstance in Layout.GetLoadedInstances())
-            {
-                locationReportBuilder.CurrentLayout = loadedInstance;
+			foreach (var loadedInstance in Layout.GetLoadedInstances())
+			{
+				locationReportBuilder.CurrentLayout = loadedInstance;
 
-                loadedInstance.Query().Visit(
-                    locationReportBuilder,
-                    BranchVisitor,
-                    AvalonViewControlVisitor
-                    );
+				loadedInstance.Query().Visit(
+					locationReportBuilder,
+					BranchVisitor,
+					AvalonViewControlVisitor
+					);
 
-                if (locationReportBuilder.IsFound)
-                    break;
-            }
+				if (locationReportBuilder.IsFound)
+					break;
+			}
 
-            if (!locationReportBuilder.IsFound)
-                throw new LocationReportException("Instance not within any layout.");
+			if (!locationReportBuilder.IsFound)
+				throw new LocationReportException("Instance not within any layout.");
 
-            return locationReportBuilder.ToLocationReport();
-        }
+			return locationReportBuilder.ToLocationReport();
+		}
 
-        private static void BranchVisitor(LocationReportBuilder locationReportBuilder, BranchAccessor branchAccessor)
-        {
-            if (Equals(branchAccessor.FirstAvalonViewControl, locationReportBuilder.TargetAvalonViewControl))
-                locationReportBuilder.MarkFound(branchAccessor.Branch, false);
-            else if (Equals(branchAccessor.SecondAvalonViewControl, locationReportBuilder.TargetAvalonViewControl))
-                locationReportBuilder.MarkFound(branchAccessor.Branch, true);
-            else
-            {
-                branchAccessor.Visit(BranchItem.First, ba => BranchVisitor(locationReportBuilder, ba));
-                if (locationReportBuilder.IsFound) return;
-                branchAccessor.Visit(BranchItem.Second, ba => BranchVisitor(locationReportBuilder, ba));
-            }
-        }
+		private static void BranchVisitor(LocationReportBuilder locationReportBuilder, BranchAccessor branchAccessor)
+		{
+			if (Equals(branchAccessor.FirstAvalonViewControl, locationReportBuilder.TargetAvalonViewControl))
+				locationReportBuilder.MarkFound(branchAccessor.Branch, false);
+			else if (Equals(branchAccessor.SecondAvalonViewControl, locationReportBuilder.TargetAvalonViewControl))
+				locationReportBuilder.MarkFound(branchAccessor.Branch, true);
+			else
+			{
+				branchAccessor.Visit(BranchItem.First, ba => BranchVisitor(locationReportBuilder, ba));
+				if (locationReportBuilder.IsFound) return;
+				branchAccessor.Visit(BranchItem.Second, ba => BranchVisitor(locationReportBuilder, ba));
+			}
+		}
 
-        private static void AvalonViewControlVisitor(LocationReportBuilder locationReportBuilder, AvalonViewControl avalonViewControl)
-        {
-            if (Equals(avalonViewControl, locationReportBuilder.TargetAvalonViewControl))
-                locationReportBuilder.MarkFound();
-        }
-    }
+		private static void AvalonViewControlVisitor(LocationReportBuilder locationReportBuilder, AvalonViewControl avalonViewControl)
+		{
+			if (Equals(avalonViewControl, locationReportBuilder.TargetAvalonViewControl))
+				locationReportBuilder.MarkFound();
+		}
+	}
 }
