@@ -1,11 +1,11 @@
-﻿namespace AvalonStudio.Extensibility.Platform
+﻿namespace AvalonStudio.Platform
 {
     using AvalonStudio.Utils;
     using System;
     using System.IO;
     using Utils;
 
-    public class Platform
+    public static class Platform
     {
         public static void Initialise ()
         {
@@ -28,6 +28,83 @@
             {
                 Directory.CreateDirectory(RepoCatalogDirectory);
             }
+        }       
+        
+        public static string ToAvalonPath (this string path)
+        {
+            return path.Replace('\\', '/');
+        } 
+
+        public static string ToPlatformPath (this string path)
+        {
+            switch(PlatformIdentifier)
+            {
+                case PlatformID.Win32NT:
+                    return path.Replace('/', '\\');                    
+
+                default:
+                    return path.ToAvalonPath();
+            }
+        }
+
+        public static string ExecutionPath
+        {
+            get
+            {
+                return Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            }
+        }
+
+        public static string PluginsDirectory
+        {
+            get
+            {
+                return Path.Combine(ExecutionPath, "Plugins");
+            }
+        }
+
+		public static string ExecutableExtension
+		{
+			get
+			{
+				switch (PlatformIdentifier) 
+				{
+				case  PlatformID.Unix:
+					{
+						return string.Empty;
+					}
+
+				case PlatformID.Win32NT:
+					{
+						return ".exe";
+					}
+
+				default:
+					throw new NotImplementedException("Not implemented for your platform.");
+				}                
+			}
+		}
+
+        public static char DirectorySeperator
+        {
+            get
+            {
+				switch (PlatformIdentifier) 
+				{
+				case  PlatformID.Unix:
+					{
+						return '/';
+					}
+
+				case PlatformID.Win32NT:
+					{
+						return '\\';
+					}
+
+				default:
+					throw new NotImplementedException("Not implemented for your platform.");
+				}                
+            }
         }
 
         public static PlatformID PlatformIdentifier
@@ -47,10 +124,20 @@
                     case PlatformID.Win32NT:
                         return "c:\\AvalonStudio";
 
+				case PlatformID.Unix:
+					var homeDir = Environment.GetEnvironmentVariable ("HOME");
+
+					return Path.Combine (homeDir, "AvalonStudio");
+
                     default:
                         throw new NotImplementedException("Not implemented for your platform.");
                 }
             }
+        }
+
+        public static string ProjectDirectory
+        {
+            get { return Path.Combine(BaseDirectory, "Projects"); }
         }
 
         public static string AppDataDirectory

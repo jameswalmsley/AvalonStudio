@@ -5,7 +5,6 @@
     using Perspex.Threading;
     using ReactiveUI;
     using Repositories;
-    using System;
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
@@ -108,18 +107,7 @@
 
                 this.RaiseAndSetIfChanged(ref enableInterface, value);
             }
-        }
-
-
-        private bool ProgressUpdate(LibGit2Sharp.TransferProgress progress)
-        {
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                Status = string.Format("Bytes: {0}, Objects {1}", progress.ReceivedBytes, progress.ReceivedObjects);
-            });
-
-            return true;
-        }
+        }        
 
         public void WriteLine(string data)
         {

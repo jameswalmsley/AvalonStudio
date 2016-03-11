@@ -5,6 +5,7 @@
     using System;
     using Perspex.Input;
     using Perspex.Controls.Primitives;
+    using Perspex;
 
     public class MetroWindow : Window, IStyleable
     {
@@ -16,6 +17,7 @@
         Type IStyleable.StyleKey => typeof(MetroWindow);
 
         private Grid titleBar;
+        private Button minimiseButton;
         private Button restoreButton;
         private Button closeButton;
         private Grid topHorizontalGrip;
@@ -26,8 +28,18 @@
         private Grid bottomLeftGrip;
         private Grid topRightGrip;
         private Grid bottomRightGrip;
+        private Panel icon;
 
-        protected override void OnPointerPressed(PointerPressEventArgs e)
+        public static readonly PerspexProperty<Control> TitleBarContentProperty =
+            PerspexProperty.Register<MetroWindow, Control>(nameof(TitleBarContent));
+
+        public Control TitleBarContent
+        {
+            get { return GetValue(TitleBarContentProperty); }
+            set { SetValue(TitleBarContentProperty, value); }
+        }
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             if (topHorizontalGrip.IsPointerOver)
             {
@@ -63,6 +75,7 @@
             }
             else if (titleBar.IsPointerOver)
             {
+                WindowState = WindowState.Normal;
                 BeginMoveDrag();
             }
 
@@ -70,11 +83,12 @@
         }
 
         protected override void OnTemplateApplied(TemplateAppliedEventArgs e)
-        {
-            
+        {            
             titleBar = e.NameScope.Find<Grid>("titlebar");
+            minimiseButton = e.NameScope.Find<Button>("minimiseButton");
             restoreButton = e.NameScope.Find<Button>("restoreButton");
             closeButton = e.NameScope.Find<Button>("closeButton");
+            icon = e.NameScope.Find<Panel>("icon");
 
             topHorizontalGrip = e.NameScope.Find<Grid>("topHorizontalGrip");
             bottomHorizontalGrip = e.NameScope.Find<Grid>("bottomHorizontalGrip");
@@ -84,17 +98,36 @@
             topLeftGrip = e.NameScope.Find<Grid>("topLeftGrip");
             bottomLeftGrip = e.NameScope.Find<Grid>("bottomLeftGrip");
             topRightGrip = e.NameScope.Find<Grid>("topRightGrip");
-            bottomRightGrip = e.NameScope.Find<Grid>("bottomRightGrip");            
+            bottomRightGrip = e.NameScope.Find<Grid>("bottomRightGrip");
+
+            minimiseButton.Click += (sender, ee) =>
+            {
+                WindowState = WindowState.Minimized;
+            };
 
             restoreButton.Click += (sender, ee) =>
             {
-                
+                switch (WindowState)
+                {
+                    case WindowState.Maximized:
+                        WindowState = WindowState.Normal;                        
+                        break;
+
+                    case WindowState.Normal:
+                        WindowState = WindowState.Maximized;
+                        break;
+                }
             };
 
             closeButton.Click += (sender, ee) =>
             {
                 Close();
-            };            
+            };
+
+            icon.DoubleTapped += (sender, ee) =>
+            {
+                Close();
+            };
         }
     }
 }

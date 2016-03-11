@@ -1,4 +1,4 @@
-﻿namespace VEBuild
+﻿namespace AvalonStudio
 {
     using AvalonStudio.Projects.Standard;
     using CommandLine;
@@ -14,16 +14,34 @@
 
     abstract class ProjectOption
     {
-        [Value(0, MetaName = "Project", HelpText = "Name of project to run command on")]
+        [Value(0, MetaName = "Solution", HelpText = "Solution file (asln)")]
+        public string Solution { get; set; }
+
+        [Value(1, MetaName = "Project", HelpText = "Name of project to run command on")]
         public string Project { get; set; }
     }
 
-    [Verb("build", HelpText ="Builds the project in the current directory.")]
-    class BuildOptions : ProjectOption
+    [Verb ("test")]
+    class TestOptions : ProjectOption
     {
 
-        [Option('j', "jobs", Required = false, Default = 1, HelpText = "Number of jobs for compiling.")]
-        public int Jobs { get; set; }        
+    }
+
+    [Verb("build", HelpText = "Builds the project in the current directory.")]
+    class BuildOptions : ProjectOption
+    {
+        [Option('j', "jobs", Required = false, Default = 4, HelpText = "Number of jobs for compiling.")]
+        public int Jobs { get; set; }
+    }
+
+    [Verb("install-package", HelpText = "Installs a package manually.")]
+    class PackageOptions
+    {
+        [Value(0, MetaName = "PackageName", HelpText = "Package Name i.e. AvalonStudio.Toolchains.STM32")]
+        public string Package { get; set; }
+
+        [Value(1, MetaName ="Tag", HelpText ="")]
+        public string Tag { get; set; }
     }
 
     [Verb("clean", HelpText = "Cleans the specified project.")]

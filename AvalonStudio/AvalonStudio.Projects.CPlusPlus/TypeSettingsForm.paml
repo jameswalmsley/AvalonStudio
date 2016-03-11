@@ -1,0 +1,3 @@
+﻿<TabItem xmlns="https://github.com/perspex" Header="Type">
+  <DropDown Items="{Binding ProjectTypeOptions}" SelectedItem="{Binding ProjectType, Mode=TwoWay}" />
+</TabItem>

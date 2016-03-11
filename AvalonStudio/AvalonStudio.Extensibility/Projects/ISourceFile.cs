@@ -1,4 +1,6 @@
-﻿namespace AvalonStudio.Projects
+﻿using System;
+
+namespace AvalonStudio.Projects
 {    
     public enum Language
     {
@@ -6,12 +8,10 @@
         Cpp
     }
 
-    public interface ISourceFile : IProjectItem
+    public interface ISourceFile : IProjectItem, IComparable<ISourceFile>
     {
         string File { get; }
         string Location { get; }
         Language Language { get; }
-
-        IProject Project { get; }
     }
 }

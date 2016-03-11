@@ -4,9 +4,8 @@
     using Controls.ViewModels;
     using Debugging;
     using Extensibility;
-    using Extensibility.Platform;
+    using Platform;
     using Languages;
-    using Models;
     using MVVM;
     using Projects;
     using ReactiveUI;
@@ -16,6 +15,12 @@
     using System.Linq;
     using System.Threading;
     using Toolchains;
+    using Utils;
+    public enum Perspective
+    {
+        Editor,
+        Debug
+    }    
 
     [Export(typeof(WorkspaceViewModel))]
     public class WorkspaceViewModel : ViewModel<Workspace>
@@ -28,8 +33,6 @@
         {
             this.editor = editor;
 
-            AvalonStudioService.Initialise();
-
             MainMenu = new MainMenuViewModel();
             SolutionExplorer = new SolutionExplorerViewModel();
             Editor = new EditorViewModel(editor);
@@ -39,7 +42,7 @@
 
             StatusBar.LineNumber = 1;
             StatusBar.Column = 1;
-            StatusBar.PlatformString = Platform.PlatformString;
+            StatusBar.PlatformString = Platform.Platform.PlatformString;
 
             SolutionExplorer.SelectedItemChanged += (sender, e) =>
             {
@@ -57,7 +60,10 @@
             ProcessCancellationToken = new CancellationTokenSource();
 
             ModalDialog = new ModalDialogViewModelBase("Dialog");
-        }        
+
+            DebugManager = new DebugManager();
+            CurrentPerspective = Perspective.Editor;
+        }
 
         public void InvalidateErrors()
         {
@@ -106,19 +112,42 @@
             }
         }
 
+        public DebugManager DebugManager { get; private set; }
+
         public MainMenuViewModel MainMenu { get; private set; }
 
         public SolutionExplorerViewModel SolutionExplorer { get; private set; }
 
         public EditorViewModel Editor { get; private set; }
 
-        public ConsoleViewModel Console { get; private set; }
+        public IConsole Console { get; private set; }
 
         public ErrorListViewModel ErrorList { get; private set; }
 
         public StatusBarViewModel StatusBar { get; private set; }
 
         public CancellationTokenSource ProcessCancellationToken { get; private set; }
+
+        private Perspective currentPerspective;
+        public Perspective CurrentPerspective
+        {
+            get { return currentPerspective; }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref currentPerspective, value);
+
+                switch(value)
+                {
+                    case Perspective.Editor:
+                        break;
+
+                    case Perspective.Debug:
+                        // TODO close intellisense, and tooltips.
+                        // disable documents, get rid of error list, solution explorer, etc.    (isreadonly)   
+                        break;
+                }
+            }
+        }
 
         private ModalDialogViewModelBase modalDialog;
         public ModalDialogViewModelBase ModalDialog

@@ -1,16 +1,11 @@
 ﻿<UserControl xmlns="https://github.com/perspex">
-  <Menu Grid.ColumnSpan="2" Background="#2d2d30">
-    <Menu.Styles>
-      <Style Selector="MenuItem">
-        <Setter Property="Background" Value="#2d2d30" />
-      </Style>
-    </Menu.Styles>
+  <Menu Grid.ColumnSpan="2">
     <MenuItem Header="File">
-      <MenuItem Header="New Project"/>
+      <MenuItem Header="New Project" Command="{Binding NewProjectCommand}"/>
       <MenuItem Header="Open Project" Command="{Binding LoadProjectCommand}"/>
       <MenuItem Header="Save" HotKey="Ctrl+S" Command="{Binding SaveCommand}" />
       <MenuItem Header="Save All"/>
-      <MenuItem Header="Exit"/>
+      <MenuItem Header="Exit" HotKey="Alt+F4" Command="{Binding ExitCommand}"/>
     </MenuItem>
 
     <MenuItem Header="View">
@@ -34,7 +29,13 @@
 
     <MenuItem Header="Build">
       <MenuItem Header="Clean Project" Command="{Binding CleanProjectCommand}" />
-      <MenuItem Header="Build Project" Command="{Binding BuildProjectCommand}" />
+      <MenuItem Header="Build Project" Command="{Binding BuildProjectCommand}" HotKey="F6" />
+    </MenuItem>
+
+    <MenuItem Header="Debug">
+      <MenuItem Header="Start Debugging" Command="{Binding StartDebugCommand}" HotKey="F5" />
+      <MenuItem Header="Step Into" Command="{Binding StepIntoCommand}" HotKey="F11" />
+      <MenuItem Header="Step Over" Command="{Binding StepOverCommand}" HotKey="F10" />      
     </MenuItem>
 
     <MenuItem Header="Tools">

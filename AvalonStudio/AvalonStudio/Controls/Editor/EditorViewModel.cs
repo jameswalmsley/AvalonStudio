@@ -1,5 +1,5 @@
 ﻿namespace AvalonStudio.Controls
-{    
+{
     using MVVM;
     using ReactiveUI;
     using System;
@@ -11,8 +11,9 @@
     using Languages;
     using TextEditor.Rendering;
     using TextEditor;
-    using Extensibility.Platform;
-
+    using Platform;
+    using Utils;
+    using Projects;
     public class EditorViewModel : ViewModel<EditorModel>
     {
         private List<IBackgroundRenderer> languageServiceBackgroundRenderers = new List<IBackgroundRenderer>();
@@ -96,6 +97,10 @@
 
             backgroundRenderers = new ObservableCollection<IBackgroundRenderer>();
             backgroundRenderers.Add(new SelectedLineBackgroundRenderer());
+
+            debugLineHighlighter = new SelectedDebugLineBackgroundRenderer();
+            backgroundRenderers.Add(debugLineHighlighter);
+
             backgroundRenderers.Add(new ColumnLimitBackgroundRenderer());
             backgroundRenderers.Add(new SelectionBackgroundRenderer());
 
@@ -105,6 +110,7 @@
         }
         #endregion
 
+        public SelectedDebugLineBackgroundRenderer debugLineHighlighter;
         private SelectedWordTextLineTransformer wordAtCaretHighlighter;
 
         #region Properties
@@ -160,7 +166,7 @@
 
                 if (!Intellisense.IsVisible)
                 {
-                    Intellisense.Position = new Thickness(caretLocation.X, caretLocation.Y + LineHeight, 0, 0);
+                    Intellisense.Position = new Thickness(caretLocation.X, caretLocation.Y, 0, 0);
                 }
             }
         }
@@ -214,6 +220,55 @@
             }
         }
 
+        private bool isHoverProbeOpen;
+        public bool IsHoverProbeOpen
+        {
+            get { return isHoverProbeOpen; }
+            set { this.RaiseAndSetIfChanged(ref isHoverProbeOpen, value); }
+        }
+
+        private SymbolViewModel hoverProbe;
+        public SymbolViewModel HoverProbe
+        {
+            get { return hoverProbe; }
+            set { this.RaiseAndSetIfChanged(ref hoverProbe, value); }
+        }
+
+        
+        private void InvalidateCursorUnderMouse()
+        {
+            var symbol = Model.LanguageService?.GetSymbol(Model.ProjectFile, EditorModel.UnsavedFiles, MouseCursorOffset);
+
+            if (symbol != null)
+            {
+                if (IsHoverProbeOpen && hoverProbe.Model != symbol)
+                {
+                    IsHoverProbeOpen = false;
+                }
+
+                switch (symbol.Kind)
+                {
+                    case CursorKind.CompoundStatement:
+                    case CursorKind.NoDeclarationFound:
+                    case CursorKind.NotImplemented:
+                        break;
+
+                    default:
+                        HoverProbe = new SymbolViewModel(symbol);
+                        IsHoverProbeOpen = true;
+                        break;
+                }
+            }           
+        }
+
+        private int mouseCursorOffset;
+        public int MouseCursorOffset
+        {
+            get { return mouseCursorOffset; }
+            set { this.RaiseAndSetIfChanged(ref mouseCursorOffset, value); InvalidateCursorUnderMouse(); }
+        }
+
+
         private ObservableCollection<SyntaxHighlightingData> highlightingData;
         public ObservableCollection<SyntaxHighlightingData> HighlightingData
         {
@@ -247,41 +302,45 @@
         public void OnKeyUp(KeyEventArgs e)
         {
             Intellisense.OnKeyUp(e);
-
-            switch (e.Key)
-            {
-                case Key.Return:
-                    {
-                        if (CaretIndex < TextDocument.TextLength)
-                        {
-                            if (TextDocument.GetCharAt(CaretIndex) == '}')
-                            {
-                                TextDocument.Insert(CaretIndex, Environment.NewLine);
-                                CaretIndex--;
-
-                                var currentLine = TextDocument.GetLineByOffset(CaretIndex);
-
-
-                                //Model.in indentationStrategy.IndentLine(TextDocument, currentLine);
-                                //indentationStrategy.IndentLine(TextDocument, currentLine.NextLine);
-                            }
-
-                            //indentationStrategy.IndentLine(TextDocument, TextDocument.GetLineByOffset(CaretIndex));
-                        }
-                    }
-                    break;
-            }
         }
 
         public void OnKeyDown(KeyEventArgs e)
-        {
+        {            
             Intellisense.OnKeyDown(e);
         }
+
 
         public void OnTextInput(TextInputEventArgs e)
         {
             Intellisense.OnTextInput(e);
         }
+
+        public void OnPointerMoved (PointerEventArgs e)
+        {
+            
+        }
+
+        public void OpenFile(ISourceFile file, int line, int column, bool debugHighlight = false)
+        {
+            Model.OpenFile(file);
+
+            if(debugHighlight)
+            {
+                debugLineHighlighter.Line = line;
+            }
+
+            CaretIndex = TextDocument.GetOffset(line, column);
+        }
+
+        private void FormatAll()
+        {
+            if (Model?.LanguageService != null)
+            {
+                CaretIndex = Model.LanguageService.Format(Model.ProjectFile, TextDocument, 0, (uint)TextDocument.TextLength, CaretIndex);
+            }
+        }
+
+
 
         public TextLocation CaretTextLocation
         {

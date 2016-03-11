@@ -2,19 +2,21 @@
 {
     using System;
     using Perspex.Threading;
-    using Models;
     using ReactiveUI;
     using TextEditor.Document;
-    using ReactiveUI;
     using Utils;
+    using TextEditor.Rendering;
+    using System.Collections.ObjectModel;
 
     public class ConsoleViewModel : ReactiveObject, IConsole
     {
         public ConsoleViewModel()
         {
             Document = new TextDocument();
+            backgroundRenderers = new ObservableCollection<IBackgroundRenderer>();
+            backgroundRenderers.Add(new SelectedLineBackgroundRenderer());
+            backgroundRenderers.Add(new SelectionBackgroundRenderer());
         }
-
 
         public TextDocument Document { get; private set; }
 
@@ -25,7 +27,14 @@
             set { this.RaiseAndSetIfChanged(ref caretIndex, value); }
         }
 
-        private void ScrollToEnd ()
+        private ObservableCollection<IBackgroundRenderer> backgroundRenderers;
+        public ObservableCollection<IBackgroundRenderer> BackgroundRenderers
+        {
+            get { return backgroundRenderers; }
+            set { this.RaiseAndSetIfChanged(ref backgroundRenderers, value); }
+        }
+
+        private void ScrollToEnd()
         {
             CaretIndex = Document.TextLength;
         }
@@ -34,7 +43,8 @@
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Document.Text = string.Empty;                
+                // safe way other than document.text = string.empty
+                Document.Replace(0, Document.TextLength, string.Empty);
             });
         }
 

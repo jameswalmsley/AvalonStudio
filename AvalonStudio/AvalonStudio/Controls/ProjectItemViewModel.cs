@@ -1,10 +1,10 @@
 ﻿
 namespace AvalonStudio.Controls.ViewModels
 {
-    using AvalonStudio.Models.Solutions;
     using AvalonStudio.MVVM;
     using Perspex.Controls;
     using Projects;
+    using Projects.Standard;
     using ReactiveUI;
     using System;
     using System.Collections.ObjectModel;
@@ -28,8 +28,13 @@ namespace AvalonStudio.Controls.ViewModels
                 result = new SourceFileViewModel(item as ISourceFile);
             }
 
+            if(item is ReferenceFolder)
+            {
+                result = new ReferenceFolderViewModel(item as ReferenceFolder);
+            }
+
             return result;
-        }
+        }        
     }
 
     public abstract class ProjectItemViewModel<T> : ProjectItemViewModel  where T : IProjectItem
@@ -85,6 +90,11 @@ namespace AvalonStudio.Controls.ViewModels
         {
             get { return this.Model.Name; }
            // set { this.Model.Name = value; this.RaisePropertyChanged(); IsEditingTitle = false; }
+        }
+
+        public void Invalidate()
+        {
+            this.RaisePropertyChanged();
         }
 
         public int NumberOfSelections { get; set; }

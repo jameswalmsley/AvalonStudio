@@ -2,59 +2,71 @@
 {
     using AvalonStudio.MVVM;
     using AvalonStudio.Projects;
+    using AvalonStudio.Utils;
+    using Perspex.Controls;
+    using Projects.Standard;
     using ReactiveUI;
+    using Standard;
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Dynamic;
     using System.Linq;
     using System.Windows.Input;
 
     public class CompileSettingsViewModel : ViewModel<IProject>
     {
-        public CompileSettingsViewModel(IProject project) : base (project)
+        private CompileSettings settings = new CompileSettings();
+        public CompileSettingsViewModel(IProject project) : base(project)
         {
-            //var config = project.SelectedConfiguration;
-            //cppSupport = config.CppSupport;
-            //miscOptions = config.MiscCompilerArguments;
-            //includePaths = new ObservableCollection<string>(config.IncludePaths);
-            defines = new ObservableCollection<string>();
-
-            try { defines = new ObservableCollection<string>(); } catch (Exception e) { }
-
-            foreach (var define in Model.CompilerSettings.Defines)
+            try
             {
-                defines.Add(define);
+                settings = STM32GCCToolchain.GetSettings(project).CompileSettings;
+            }
+            catch (Exception e)
+            {
+                Model.ToolchainSettings.STM32ToolchainSettings = new STM32ToolchainSettings();
             }
 
-            //optimizationLevelSelectedIndex = (int)config.Optimization;
-            //optimizationPreferenceSelectedIndex = (int)config.OptimizationPreference;
-            //fpuSelectedIndex = (int)config.Fpu;
-            //debugSymbols = config.DebugSymbols;
-            //rtti = config.Rtti;
-            //exceptions = config.Exceptions;
+            defines = new ObservableCollection<string>(settings.Defines);
+            includePaths = new ObservableCollection<string>(settings.Includes);
 
-            // this.project = project;
+            //var config = project.SelectedConfiguration;
+            //cppSupport = config.CppSupport;
+            miscOptions = settings.CustomFlags;
+            //includePaths = new ObservableCollection<string>(config.IncludePaths);            
+
+
+            optimizationLevelSelectedIndex = (int)settings.Optimization;
+            optimizationPreferenceSelectedIndex = (int)settings.OptimizationPreference;
+            fpuSelectedIndex = (int)settings.Fpu;
+            debugSymbols = settings.DebugInformation;
+            rtti = settings.Rtti;
+            exceptions = settings.Exceptions;
+
             AddDefineCommand = ReactiveCommand.Create();// new RoutingCommand(AddDefine, (o) => DefineText != string.Empty && DefineText != null && !Defines.Contains(DefineText));
             AddDefineCommand.Subscribe(AddDefine);
 
             RemoveDefineCommand = ReactiveCommand.Create();// new RoutingCommand(RemoveDefine, (o) => SelectedDefine != string.Empty && SelectedDefine != null);
             RemoveDefineCommand.Subscribe(RemoveDefine);
-            //AddIncludePathCommand = new RoutingCommand(AddIncludePath);
-            //RemoveIncludePathCommand = new RoutingCommand(RemoveIncludePath, RemoveIncludePathCanExecute);
+
+            AddIncludePathCommand = ReactiveCommand.Create();
+            AddIncludePathCommand.Subscribe(AddIncludePath);
+
+            RemoveIncludePathCommand = ReactiveCommand.Create();
+            RemoveIncludePathCommand.Subscribe(RemoveIncludePath);
 
             UpdateCompileString();
-        }        
+        }
 
         public void UpdateCompileString()
         {
             Save();
 
-            
-            //if (project.SelectedConfiguration.ToolChain is StandardToolChain)
-            //{
-            //    var cTc = project.SelectedConfiguration.ToolChain as StandardToolChain;
-
-            //    CompilerArguments = cTc.GetCompilerArguments(project, FileType.CPlusPlus);
-            //}
+            if (Model.ToolChain != null && Model.ToolChain is StandardToolChain)
+            {
+                CompilerArguments = (Model.ToolChain as StandardToolChain).GetCompilerArguments(Model as IStandardProject, Model as IStandardProject, null);
+            }
         }
 
         private void AddDefine(object param)
@@ -70,23 +82,25 @@
             UpdateCompileString();
         }
 
-        private void AddIncludePath(object param)
+        private async void AddIncludePath(object param)
         {
-            //FolderBrowserDialog fbd = new FolderBrowserDialog();
+            OpenFolderDialog fbd = new OpenFolderDialog();
 
-            //fbd.SelectedPath = project.CurrentDirectory;
+            fbd.InitialDirectory = Model.CurrentDirectory;
 
-            //if (fbd.ShowDialog() == DialogResult.OK)
-            //{
-            //    string newInclude = project.CurrentDirectory.MakeRelativePath(fbd.SelectedPath);
+            var result = await fbd.ShowAsync();
 
-            //    if (newInclude == string.Empty)
-            //    {
-            //        newInclude = "\\";
-            //    }
+            if (result != string.Empty)
+            {
+                string newInclude = Model.CurrentDirectory.MakeRelativePath(result);
 
-            //    IncludePaths.Add(newInclude);
-            //}
+                if (newInclude == string.Empty)
+                {
+                    newInclude = "\\";
+                }
+
+                IncludePaths.Add(newInclude);
+            }
 
             UpdateCompileString();
         }
@@ -109,19 +123,23 @@
 
         public void Save()
         {
-            base.Model.CompilerSettings.Defines = defines.ToList();
+            settings.Defines = defines.ToList();
+            settings.CustomFlags = miscOptions;
+            //base.Model.CompilerSettings.Defines = defines.ToList();
             //var config = project.SelectedConfiguration;
 
             //config.CppSupport = cppSupport;
             //config.MiscCompilerArguments = miscOptions;
             //config.Defines = defines.ToList();
-            //config.IncludePaths = includePaths.ToList();
-            //config.Optimization = (OptimizationLevel)optimizationLevelSelectedIndex;
-            //config.OptimizationPreference = (OptimizationPreference)optimizationPreferenceSelectedIndex;
-            //config.Fpu = (FPUSupport)fpuSelectedIndex;
-            //config.DebugSymbols = debugSymbols;
-            //config.Exceptions = exceptions;
-            //config.Rtti = rtti;
+            settings.Includes = includePaths.ToList();            
+            settings.Optimization = (OptimizationLevel)optimizationLevelSelectedIndex;
+            settings.OptimizationPreference = (OptimizationPreference)optimizationPreferenceSelectedIndex;
+            settings.Fpu = (FPUSupport)fpuSelectedIndex;
+            settings.DebugInformation = debugSymbols;
+            settings.Exceptions = exceptions;
+            settings.Rtti = rtti;
+
+            Model.ToolchainSettings.STM32ToolchainSettings.CompileSettings = settings;
             Model.Save();
             //project.SaveChanges();
         }
@@ -135,9 +153,7 @@
         {
             get
             {
-                return null;
-                //throw new NotImplementedException();
-                //return Enum.GetNames(typeof(FPUSupport));
+                return Enum.GetNames(typeof(FPUSupport));
             }
         }
 
@@ -164,7 +180,7 @@
                 //            break;
                 //    }
 
-                //    UpdateCompileString();
+                UpdateCompileString();
                 //});
             }
         }
@@ -174,9 +190,7 @@
         {
             get
             {
-                return null;
-                //throw new NotImplementedException();
-                //return Enum.GetNames(typeof(OptimizationPreference));
+                return Enum.GetNames(typeof(OptimizationPreference));
             }
         }
 
@@ -197,9 +211,7 @@
         {
             get
             {
-                return null;
-                //throw new NotImplementedException();
-                //return Enum.GetNames(typeof(OptimizationLevel));
+                return Enum.GetNames(typeof(OptimizationLevel));
             }
         }
 
@@ -284,7 +296,7 @@
         public string CompilerArguments
         {
             get { return compilerArguments; }
-            set { compilerArguments = value; OnPropertyChanged(); }
+            set { this.RaiseAndSetIfChanged(ref compilerArguments, value); }
         }
 
 

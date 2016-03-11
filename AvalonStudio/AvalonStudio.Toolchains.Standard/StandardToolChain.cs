@@ -1,12 +1,14 @@
 ﻿namespace AvalonStudio.Toolchains.Standard
 {
     using AvalonStudio.Toolchains;
+    using Platform;
     using Perspex.Controls;
     using Projects;
     using Projects.Standard;
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Utils;
@@ -50,7 +52,7 @@
         public StandardToolChain(ToolchainSettings settings)
         {
             this.Settings = settings;
-            this.Jobs = 16;
+            this.Jobs = 4;
         }
 
         public int Jobs { get; set; }
@@ -109,7 +111,7 @@
             {
                 project.IsBuilding = true;
 
-                result += project.SourceFiles.Count;
+                result += project.SourceFiles.Where(sf=>SupportsFile(sf)).Count();
             }
 
             return result;
@@ -192,7 +194,7 @@
             console.WriteLine();
 
             if (result)
-            {
+            {                
                 console.WriteLine("Build Successful");
             }
             else
@@ -247,13 +249,15 @@
             var linkResult = Link(console, superProject, compileResult.Project, compileResult, outputLocation);
 
             if (linkResult.ExitCode == 0)
-            {
+            {                
                 if (compileResult.Project.Type == ProjectType.StaticLibrary)
                 {
                     linkResults.LibraryLocations.Add(executable);
                 }
                 else
                 {
+                    superProject.Executable = superProject.Location.MakeRelativePath(linkResult.Executable).ToAvalonPath();
+                    superProject.Save();
                     console.WriteLine();
                     Size(console, compileResult.Project, linkResult);
                     linkResults.ExecutableLocations.Add(executable);
@@ -374,7 +378,7 @@
                                         console.OverWrite(string.Format("[CC {0}/{1}]    [{2}]    {3}", ++buildCount, fileCount, project.Name, Path.GetFileName(file.Location)));
                                     }
 
-                                    new Thread(new ThreadStart(() =>
+                                    new Thread(() =>
                                     {
                                         var compileResult = Compile(console, superProject, project, file, objectFile);
 
@@ -393,7 +397,7 @@
                                             numTasks--;
                                             numLocalTasks--;
                                         }
-                                    })).Start();
+                                    }).Start();
                                 }
                                 else
                                 {
@@ -489,6 +493,12 @@
         }
 
         public abstract IList<TabItem> GetConfigurationPages(IProject project);
+
+        public abstract bool CanHandle(IProject project);
+
+        public abstract void ProvisionSettings(IProject project);
+
+        public abstract UserControl GetSettingsControl(IProject project);
 
         public string Name { get { return GetType().ToString(); } }
 

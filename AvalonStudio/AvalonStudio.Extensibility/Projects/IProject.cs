@@ -1,19 +1,31 @@
 ﻿namespace AvalonStudio.Projects
-{    
-    using Perspex.Controls;
+{
+    using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel.Composition;
+    using Perspex.Controls;
+    using Debugging;
     using Toolchains;
+    using TestFrameworks;
 
-    public interface IProject : IProjectFolder
+    [InheritedExport(typeof(IProject))]
+    public interface IProject : IProjectFolder, IComparable<IProject>
     {
         ISolution Solution { get; }
 
         /// <summary>
         /// List of references with the project.
         /// </summary>
-        IList<IProject> References { get; }
+        ObservableCollection<IProject> References { get; }
 
-        IToolChain ToolChain { get; }
+        IToolChain ToolChain { get; set; }
+        IDebugger Debugger { get; set; }
+        ITestFramework TestFramework { get; set; }
+
+        ISourceFile FindFile(string path);
+
+        bool Hidden { get; set; }
 
         /// <summary>
         /// The directory the project file resides in.
@@ -32,11 +44,16 @@
 
         IList<TabItem> ConfigurationPages { get; }
 
-        //IDictionary<string, string> Settings { get; }
+        // TODO should these 2 methods be in seperate class?
+        IProject Load(ISolution solution, string filePath);
+        string Extension { get; }
 
-        dynamic CompilerSettings { get; }
+        //IDictionary<string, string> Settings { get; }        
 
-        dynamic LinkerSettings { get; }
+        // TODO perhaps this shouldnt be tied to IProject?
+        string Executable { get; set; }
+
+        dynamic ToolchainSettings { get; }
 
         dynamic DebugSettings { get; }
 

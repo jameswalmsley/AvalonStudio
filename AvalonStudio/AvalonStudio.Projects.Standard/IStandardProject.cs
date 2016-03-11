@@ -28,7 +28,6 @@
 
         string BuildDirectory { get; }
         string LinkerScript { get;  }
-        string Executable { get; }
 
         IList<string> BuiltinLibraries { get; }
 
@@ -44,18 +43,19 @@
 
         IList<string> CppCompilerArguments { get; }
 
-        IList<string> Defines { get; }
+        IList<Definition> Defines { get; }
 
         IList<string> PublicIncludes { get; }
 
         IList<string> GlobalIncludes { get; }
 
-        IList<string> Includes { get; }
+        IList<Include> Includes { get; }
         IList<string> GetReferencedIncludes();
         IList<string> GetGlobalIncludes();
 
-        IToolChain ToolChain { get; }
-
+        IList<string> GetReferencedDefines();
+        IList<string> GetGlobalDefines();        
+        
         IList<ISourceFile> SourceFiles { get; }
     }
 }

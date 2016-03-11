@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ASBuild</RootNamespace>
     <AssemblyName>asb</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,6 +39,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompositionRoot.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgramConsole.cs" />
@@ -61,17 +64,17 @@
       <Project>{5614aa2f-2b01-4e0d-807e-924680c570ed}</Project>
       <Name>AvalonStudio.Extensibility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AvalonStudio.Models\AvalonStudio.Models.csproj">
-      <Project>{EACBFF14-438D-4311-8D8C-18E7E6769C8F}</Project>
-      <Name>AvalonStudio.Models</Name>
+    <ProjectReference Include="..\AvalonStudio.Projects.CPlusPlus\AvalonStudio.Projects.CPlusPlus.csproj">
+      <Project>{47e266ea-bbc4-4794-96da-b1f3ecb5bb9b}</Project>
+      <Name>AvalonStudio.Projects.CPlusPlus</Name>
     </ProjectReference>
     <ProjectReference Include="..\AvalonStudio.Projects.Standard\AvalonStudio.Projects.Standard.csproj">
       <Project>{4726219f-2e8e-4f65-a5ad-3167e3dbf56c}</Project>
       <Name>AvalonStudio.Projects.Standard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AvalonStudio.Projects.VEBuild\AvalonStudio.Projects.VEBuild.csproj">
-      <Project>{47e266ea-bbc4-4794-96da-b1f3ecb5bb9b}</Project>
-      <Name>AvalonStudio.Projects.VEBuild</Name>
+    <ProjectReference Include="..\AvalonStudio.Repository\AvalonStudio.Repositories.csproj">
+      <Project>{29c948e9-4d96-4490-b039-a5bbf6eec2e5}</Project>
+      <Name>AvalonStudio.Repositories</Name>
     </ProjectReference>
     <ProjectReference Include="..\AvalonStudio.Toolchains.Llilum\AvalonStudio.Toolchains.Llilum.csproj">
       <Project>{baab6832-377b-4115-be7e-4c90898eaaa3}</Project>

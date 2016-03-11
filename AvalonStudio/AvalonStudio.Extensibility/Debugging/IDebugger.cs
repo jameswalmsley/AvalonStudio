@@ -1,5 +1,7 @@
 ﻿namespace AvalonStudio.Debugging
 {
+    using Extensibility.Plugin;
+    using Perspex.Controls;
     using Projects;
     using System;
     using System.Collections.Generic;
@@ -26,6 +28,10 @@
     [InheritedExport(typeof(IDebugger))]
     public interface IDebugger
     {
+        UserControl GetSettingsControl(IProject project);
+
+        void ProvisionSettings(IProject project);
+
         DebuggerState State { get; }
 
         bool DebugMode { get; set; }

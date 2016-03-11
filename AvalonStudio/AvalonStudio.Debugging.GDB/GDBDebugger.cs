@@ -1,6 +1,7 @@
 ﻿namespace AvalonStudio.Debugging.GDB
 {
     using AvalonStudio.Utils;
+    using Platform;
     using Projects;
     using Projects.Standard;
     using System;
@@ -13,7 +14,8 @@
     using System.Xml.Serialization;
     using Toolchains;
     using Toolchains.Standard;
-    
+    using Perspex.Controls;
+
     public class GDBDebugger : IDebugger
     {
         public GDBDebugger()
@@ -166,21 +168,11 @@
 
         internal string SendCommand(Command command, Int32 timeout)
         {
-            //if(referenceDispathcer == null)
-            //{
-            //    referenceDispathcer = Dispatcher.CurrentDispatcher;
-            //}
-            //else if(referenceDispathcer != Dispatcher.CurrentDispatcher)
-            //{
-            //    //throw new Exception("Debugger being called from multiple threads.");
-            //}
-
             string result = string.Empty;
 
-            //transmitDispatcher.Invoke((Action)(() =>
+            //Task.Factory.StartNew(() =>
             {
                 transmitSemaphore.WaitOne();
-
                 SetCommand(command);
 
                 if (DebugMode)
@@ -196,7 +188,7 @@
                 ClearCommand();
 
                 transmitSemaphore.Release();
-            }//));
+            }//).Wait();
 
             return result;
         }
@@ -535,7 +527,7 @@
             }
         }
 
-        public bool Start(IToolChain toolchain, IConsole console, IProject project)
+        public virtual bool Start(IToolChain toolchain, IConsole console, IProject project)
         {
             this.console = console;
             var startInfo = new ProcessStartInfo();
@@ -544,8 +536,8 @@
 
             // This information should be part of this extension... or configurable internally?
             // This maybe indicates that debuggers are part of toolchain?
-            //startInfo.FileName = toolchain.GDBExecutable;
-            //startInfo.Arguments = string.Format("\"{0}\" --interpreter=mi", project.Executable);
+            startInfo.FileName = Path.Combine(Platform.ReposDirectory, "AvalonStudio.Toolchains.LocalGCC", "bin", "gdb" + Platform.ExecutableExtension);
+            startInfo.Arguments = string.Format("\"{0}\" --interpreter=mi", Path.Combine(project.CurrentDirectory, project.Executable).ToPlatformPath());
 
             if (!File.Exists(startInfo.FileName))
             {
@@ -558,7 +550,7 @@
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardInput = true;
-            startInfo.CreateNoWindow = false;
+            startInfo.CreateNoWindow = true;
 
             process = Process.Start(startInfo);
 
@@ -591,12 +583,10 @@
                {
                    if (e.Data != null)
                    {
-                       //console.WriteLine(e.Data);
-
-                       //receiveDispatcher.Invoke((Action)(() =>
+                       Task.Factory.StartNew(() =>
                        {
                            ProcessOutput(e.Data);
-                       }//));
+                       });
                    }
                };
 
@@ -843,6 +833,16 @@
             //{
             new VarDeleteCommand(id).Execute(this);
             //});
+        }
+
+        public virtual void ProvisionSettings(IProject project)
+        {
+
+        }
+
+        public virtual UserControl GetSettingsControl(IProject project)
+        {
+            return new UserControl();
         }
     }
 }

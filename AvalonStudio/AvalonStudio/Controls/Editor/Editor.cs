@@ -12,6 +12,8 @@
     using Projects;
     using System.Linq;
     using Extensibility;
+    using TextEditor;
+
     [Export(typeof(EditorModel))]
     public class EditorModel
     {
@@ -22,7 +24,9 @@
         private SemaphoreSlim startCompletionRequestSemaphore;
         private SemaphoreSlim endCompletionRequestSemaphore;
         private ReaderWriterLockSlim completionRequestLock;
-        private ISourceFile sourceFile;
+        private ISourceFile sourceFile;   
+        
+        public TextEditor Editor { get; set; }
 
         public EditorModel()
         {
@@ -65,53 +69,56 @@
 
         public void OpenFile(ISourceFile file)
         {
-            if (File.Exists(file.Location))
+            if (this.sourceFile != file)
             {
-                using (var fs = File.OpenText(file.Location))
+                if (File.Exists(file.Location))
                 {
-                    TextDocument = new TextDocument(fs.ReadToEnd());
+                    using (var fs = File.OpenText(file.Location))
+                    {
+                        TextDocument = new TextDocument(fs.ReadToEnd());
+                    }
                 }
+
+                ShutdownBackgroundWorkers();
+
+                if (unsavedFile != null)
+                {
+                    UnsavedFiles.Remove(unsavedFile);
+                    unsavedFile = null;
+                }
+
+                if (LanguageService != null && sourceFile != null)
+                {
+                    LanguageService.UnregisterSourceFile(Editor, sourceFile);
+                }
+
+                try
+                {
+                    LanguageService = Workspace.Instance.LanguageServices.Single((o) => o.CanHandle(file));
+
+                    WorkspaceViewModel.Instance.StatusBar.Language = LanguageService.Title;
+
+                    LanguageService.RegisterSourceFile(Editor, file, TextDocument);
+                }
+                catch
+                {
+                    LanguageService = null;
+                }
+
+                IsDirty = false;
+
+                sourceFile = file;
+
+                StartBackgroundWorkers();
+
+                DocumentLoaded(this, new EventArgs());
+
+                TextDocument.TextChanged += TextDocument_TextChanged;
+
+                OnBeforeTextChanged(null);
+
+                TriggerCodeAnalysis();
             }
-
-            ShutdownBackgroundWorkers();
-
-            if (unsavedFile != null)
-            {
-                UnsavedFiles.Remove(unsavedFile);
-                unsavedFile = null;
-            }
-            
-            if(LanguageService != null && sourceFile != null)
-            {
-                LanguageService.UnregisterSourceFile(sourceFile);
-            }
-
-            try
-            {
-                LanguageService = Workspace.Instance.LanguageServices.Single((o) => o.CanHandle(file));
-
-                WorkspaceViewModel.Instance.StatusBar.Language = LanguageService.Title;
-
-                LanguageService.RegisterSourceFile(file, TextDocument);
-            }
-            catch 
-            {
-                LanguageService = null;
-            }
-
-            IsDirty = false;
-
-            sourceFile = file;
-
-            StartBackgroundWorkers();
-
-            DocumentLoaded(this, new EventArgs());
-
-            TextDocument.TextChanged += TextDocument_TextChanged;
-
-            OnBeforeTextChanged(null);
-
-            TriggerCodeAnalysis();
         }
 
         public void Save()
@@ -216,7 +223,7 @@
             codeCompletionThread = new Thread(new ThreadStart(CodeCompletionThread));
             codeCompletionThread.Start();
         }
-
+        
         public void ShutdownBackgroundWorkers()
         {
             if (codeAnalysisThread != null && codeAnalysisThread.IsAlive)
@@ -226,9 +233,9 @@
                 codeAnalysisThread = null;
             }
 
-            if (codeAnalysisThread != null && codeCompletionThread.IsAlive)
+            if (codeCompletionThread != null && codeCompletionThread.IsAlive)
             {
-                codeCompletionThread.Abort();
+                codeCompletionThread.Abort();                
                 codeCompletionThread.Join();
                 codeCompletionResults = null;
             }
@@ -288,7 +295,7 @@
             {
                 while (true)
                 {
-                    startCompletionRequestSemaphore.Wait();
+                    startCompletionRequestSemaphore.Wait();                    
 
                     if (LanguageService != null)
                     {
@@ -322,7 +329,7 @@
             {
                 while (true)
                 {
-                    textChangedSemaphore.Wait();
+                    textChangedSemaphore.Wait();                                                           
 
                     completionRequestLock.EnterWriteLock();
                     editorLock.EnterReadLock();
