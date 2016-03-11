@@ -46,5 +46,7 @@ namespace AvalonStudio.Controls.Dock
             get { return _y; }
             set { SetAndRaise(YProperty, ref _y, value); }
         }
+
+        internal string PartitionAtDragStart { get; set; }
     }
 }
