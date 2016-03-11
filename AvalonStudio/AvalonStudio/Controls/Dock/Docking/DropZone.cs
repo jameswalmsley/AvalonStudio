@@ -30,7 +30,7 @@ namespace AvalonStudio.Controls.Dock.Docking
         public bool IsOffered
         {
             get { return _isOffered; }
-            set { SetAndRaise(IsOfferedProperty, ref _isOffered, value); }
+            internal set { SetAndRaise(IsOfferedProperty, ref _isOffered, value); }
         }
     }
 }
