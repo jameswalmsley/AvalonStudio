@@ -40,14 +40,14 @@
           <ContentControl Content="{Binding SelectedDocument}">
             <ContentControl.DataTemplates>
               <DataTemplate>
+                <StackPanel>
+                  <Controls:Editor>
+                    <Controls:Editor.Content>
+                    </Controls:Editor.Content>
+                  </Controls:Editor>
 
-
-                <Controls:Editor>
-                  <Controls:Editor.Content>
-                    <Button Content="X" Command="{Binding CloseCommand}" Height="20" Width="50" /> 
-                  </Controls:Editor.Content>
-                </Controls:Editor>
-
+                  <Button Content="X" Command="{Binding CloseCommand}" Height="20" Width="50" />
+                </StackPanel>
               </DataTemplate>
             </ContentControl.DataTemplates>          
         </ContentControl>
