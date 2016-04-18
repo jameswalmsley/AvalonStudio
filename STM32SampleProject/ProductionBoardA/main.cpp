@@ -17,6 +17,25 @@ float Point::DistanceTo (Point& to)
     return sqrtf ((dx * dx) + (dy * dy));
 }
 
+
+
+int myFoo ()
+{
+    {
+        {
+            {
+            }
+        }
+    }
+}
+
+
+
+
+int sum (int x, int y, int z)
+{
+}
+
 int sum (int x, int y)
 {
     return x + y;
@@ -26,8 +45,7 @@ int main (void)
 {
     int x = 0;
 
-    
-    
+
     Point p;
     p.X = 1.25;
     p.Y = 2.45;

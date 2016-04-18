@@ -4,10 +4,12 @@
     using AvalonStudio.Repositories;
     using Perspex;
     using Perspex.Controls;
+    using Perspex.Controls.Primitives;
     using Perspex.Diagnostics;
     using Perspex.Logging.Serilog;
     using Serilog;
     using System;
+    using TextEditor;
 
     class App : Application
     {
@@ -28,7 +30,7 @@
             PackageSources.InitialisePackageSources();
 
             var container = CompositionRoot.CreateContainer();
-            var app = new App();
+            var app = new App();            
 
             Shell.Instance = container.GetExportedValue<Shell>();
             ShellViewModel.Instance = container.GetExportedValue<ShellViewModel>();

@@ -4,12 +4,14 @@
     using MVVM;
     using Perspex;
     using Perspex.Input;
+    using Perspex.Threading;
     using Platforms;
     using Projects;
     using ReactiveUI;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Reactive.Disposables;
     using TextEditor;
     using TextEditor.Document;
     using TextEditor.Rendering;
@@ -18,85 +20,95 @@
     {
         private List<IBackgroundRenderer> languageServiceBackgroundRenderers = new List<IBackgroundRenderer>();
         private List<IDocumentLineTransformer> languageServiceDocumentLineTransformers = new List<IDocumentLineTransformer>();
+        private CompositeDisposable disposables;
+
 
         #region Constructors
         public EditorViewModel(EditorModel model) : base(model)
         {
+            disposables = new CompositeDisposable();
             this.highlightingData = new ObservableCollection<SyntaxHighlightingData>();
 
             BeforeTextChangedCommand = ReactiveCommand.Create();
-            BeforeTextChangedCommand.Subscribe(model.OnBeforeTextChanged);
+            disposables.Add(BeforeTextChangedCommand.Subscribe(model.OnBeforeTextChanged));
 
             TextChangedCommand = ReactiveCommand.Create();
-            TextChangedCommand.Subscribe(model.OnTextChanged);
+            disposables.Add(TextChangedCommand.Subscribe(model.OnTextChanged));
 
             SaveCommand = ReactiveCommand.Create();
-            SaveCommand.Subscribe((param) => Save());
+            disposables.Add(SaveCommand.Subscribe((param) => Save()));
 
             CloseCommand = ReactiveCommand.Create();
-            CloseCommand.Subscribe(_ =>
+            disposables.Add(CloseCommand.Subscribe(_ =>
             {
                 Save();
                 ShellViewModel.Instance.Documents.Remove(this);
+                ShellViewModel.Instance.SelectedDocument = null;
                 Model.ShutdownBackgroundWorkers();
-            });
+
+                Model.Dispose();
+                Intellisense.Dispose();
+                disposables.Dispose();
+                
+                Model.TextDocument = null;                
+            }));
 
             AddWatchCommand = ReactiveCommand.Create();
-            AddWatchCommand.Subscribe(_ =>
+            disposables.Add(AddWatchCommand.Subscribe(_ =>
             {
                 ShellViewModel.Instance.DebugManager.WatchList.AddWatch(WordAtCaret);
-            });
+            }));
 
             tabCharacter = "    ";
 
-            model.DocumentLoaded += (sender, e) =>
-            {
-                foreach (var bgRenderer in languageServiceBackgroundRenderers)
-                {
-                    BackgroundRenderers.Remove(bgRenderer);
-                }
+            //model.DocumentLoaded += (sender, e) =>
+            //{
+            //    foreach (var bgRenderer in languageServiceBackgroundRenderers)
+            //    {
+            //        BackgroundRenderers.Remove(bgRenderer);
+            //    }
 
-                languageServiceBackgroundRenderers.Clear();
+            //    languageServiceBackgroundRenderers.Clear();
 
-                foreach (var transformer in languageServiceDocumentLineTransformers)
-                {
-                    DocumentLineTransformers.Remove(transformer);
-                }
+            //    foreach (var transformer in languageServiceDocumentLineTransformers)
+            //    {
+            //        DocumentLineTransformers.Remove(transformer);
+            //    }
 
-                languageServiceDocumentLineTransformers.Clear();
+            //    languageServiceDocumentLineTransformers.Clear();
 
-                if (model.LanguageService != null)
-                {
-                    languageServiceBackgroundRenderers.AddRange(model.LanguageService.GetBackgroundRenderers(model.ProjectFile));
+            //    if (model.LanguageService != null)
+            //    {
+            //        languageServiceBackgroundRenderers.AddRange(model.LanguageService.GetBackgroundRenderers(model.ProjectFile));
 
-                    foreach (var bgRenderer in languageServiceBackgroundRenderers)
-                    {
-                        BackgroundRenderers.Add(bgRenderer);
-                    }
+            //        foreach (var bgRenderer in languageServiceBackgroundRenderers)
+            //        {
+            //            BackgroundRenderers.Add(bgRenderer);
+            //        }
 
-                    languageServiceDocumentLineTransformers.AddRange(model.LanguageService.GetDocumentLineTransformers(model.ProjectFile));
+            //        languageServiceDocumentLineTransformers.AddRange(model.LanguageService.GetDocumentLineTransformers(model.ProjectFile));
 
-                    foreach (var textTransformer in languageServiceDocumentLineTransformers)
-                    {
-                        DocumentLineTransformers.Add(textTransformer);
-                    }
-                }
+            //        foreach (var textTransformer in languageServiceDocumentLineTransformers)
+            //        {
+            //            DocumentLineTransformers.Add(textTransformer);
+            //        }
+            //    }
 
-                model.CodeAnalysisCompleted += (s, ee) =>
-                {
-                    Diagnostics = model.CodeAnalysisResults.Diagnostics;
-                    HighlightingData = new ObservableCollection<SyntaxHighlightingData>(model.CodeAnalysisResults.SyntaxHighlightingData);
-                    ShellViewModel.Instance.InvalidateErrors();
-                };
+            //    model.CodeAnalysisCompleted += (s, ee) =>
+            //    {
+            //        Diagnostics = model.CodeAnalysisResults.Diagnostics;
+            //        HighlightingData = new ObservableCollection<SyntaxHighlightingData>(model.CodeAnalysisResults.SyntaxHighlightingData);
+            //        ShellViewModel.Instance.InvalidateErrors();
+            //    };
 
-                this.RaisePropertyChanged(nameof(TextDocument));
-                this.RaisePropertyChanged(nameof(Title));
-            };
+            //    this.RaisePropertyChanged(nameof(TextDocument));
+            //    this.RaisePropertyChanged(nameof(Title));
+            //};
 
-            model.TextChanged += (sender, e) =>
-            {
-                this.RaisePropertyChanged(nameof(Title));
-            };
+            //model.TextChanged += (sender, e) =>
+            //{
+            //    this.RaisePropertyChanged(nameof(Title));
+            //};
 
             this.intellisense = new IntellisenseViewModel(model, this);
 
@@ -114,6 +126,21 @@
             backgroundRenderers.Add(new SelectionBackgroundRenderer());
 
             margins = new ObservableCollection<TextViewMargin>();
+
+            timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 5);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
+        }
+
+
+        DispatcherTimer timer;
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            CloseCommand.Execute(null);
+            timer.Tick -= Timer_Tick;
         }
 
         ~EditorViewModel()
