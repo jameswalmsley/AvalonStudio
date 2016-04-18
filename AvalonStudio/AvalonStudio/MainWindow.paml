@@ -44,7 +44,7 @@
 
                 <Controls:Editor>
                   <Controls:Editor.Content>
-                    <!--<Button Content="X" Command="{Binding CloseCommand}" Height="20" Width="50" />  -->
+                    <Button Content="X" Command="{Binding CloseCommand}" Height="20" Width="50" /> 
                   </Controls:Editor.Content>
                 </Controls:Editor>
 
