@@ -104,7 +104,7 @@
 
             _caretTimer = new DispatcherTimer();
             _caretTimer.Interval = TimeSpan.FromMilliseconds(500);
-            _caretTimer.Tick += CaretTimerTick;
+            //_caretTimer.Tick += CaretTimerTick;
 
             this.GetObservable(CaretIndexProperty)
                 .Subscribe(CaretIndexChanged);
@@ -153,6 +153,11 @@
             });
 
             VisualLines = new List<VisualLine>();
+        }
+
+        ~TextView()
+        {
+
         }
         #endregion
 

@@ -26,7 +26,7 @@
 
     <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="1 2 2 1">
       <DockPanel>        
-        <Grid IsVisible="{Binding DebugVisible}" DockPanel.Dock="Left" >
+        <Grid IsVisible="{Binding DebugVisible}" DockPanel.Dock="Left"  Width="400">
           <DockPanel>
             <Grid IsVisible="{Binding DebugVisible}" DockPanel.Dock="Bottom">
               <Controls:Disassembly DataContext="{Binding DebugManager.Disassembly}" Height="300" />
@@ -37,6 +37,36 @@
         </Grid>
 
         <DockPanel DockPanel.Dock="Right">
+          <ContentControl Content="{Binding SelectedDocument}">
+            <ContentControl.DataTemplates>
+              <DataTemplate>
+
+
+                <Controls:Editor>
+                  <Controls:Editor.Content>
+                    <!--<Button Content="X" Command="{Binding CloseCommand}" Height="20" Width="50" />  -->
+                  </Controls:Editor.Content>
+                </Controls:Editor>
+
+              </DataTemplate>
+            </ContentControl.DataTemplates>          
+        </ContentControl>
+          <!--
+          <TabControl Items="{Binding Documents}">
+            <TabControl.DataTemplates>
+              <DataTemplate>
+                
+
+                  <Controls:Editor>
+                    <Controls:Editor.Content>
+                      
+                    </Controls:Editor.Content>
+                  </Controls:Editor>
+                               
+              </DataTemplate>
+            </TabControl.DataTemplates>
+          </TabControl>-->
+          <!--
           <StackPanel DockPanel.Dock="Top">
             <TabStrip Name="strip"  Items="{Binding Documents}" SelectedItem="{Binding SelectedDocument, Mode=TwoWay}" Focusable="false">
               <TabStrip.Styles>                
@@ -106,7 +136,7 @@
                 <Controls:Editor />
               </DataTemplate>
             </Carousel.DataTemplates>
-          </Carousel>
+          </Carousel>-->
           
         </DockPanel>       
       </DockPanel>

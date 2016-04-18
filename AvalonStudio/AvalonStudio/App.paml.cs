@@ -6,6 +6,7 @@
     using Perspex.Controls;
     using Perspex.Diagnostics;
     using Perspex.Logging.Serilog;
+    using Perspex.Media;
     using Serilog;
     using System;
 
@@ -32,6 +33,22 @@
 
             Shell.Instance = container.GetExportedValue<Shell>();
             ShellViewModel.Instance = container.GetExportedValue<ShellViewModel>();
+
+
+            var brush = Brush.Parse("Red");
+            
+            //while (true)
+            //{
+            //    for (int i = 0; i < 100000; i++)
+            //    {
+            //        using (var formattedText = new FormattedText("this is a line of text", "Consolas", 14, FontStyle.Normal, TextAlignment.Left, FontWeight.Normal))
+            //        {
+            //            formattedText.SetForegroundBrush(brush, 0, 12);
+            //        }
+            //    }
+
+            //    GC.Collect();
+            //}
 
             app.RunWithMainWindow<MainWindow>();
 

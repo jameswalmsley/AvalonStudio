@@ -80,44 +80,47 @@
 
         public void RegisterLanguageService(IIntellisenseControl intellisenseControl)
         {
-            ShutdownBackgroundWorkers();
+            //ShutdownBackgroundWorkers();
 
-            if (unsavedFile != null)
-            {
-                UnsavedFiles.Remove(unsavedFile);
-                unsavedFile = null;
-            }
+            //if (unsavedFile != null)
+            //{
+            //    UnsavedFiles.Remove(unsavedFile);
+            //    unsavedFile = null;
+            //}
 
-            if (LanguageService != null && sourceFile != null)
-            {
-                LanguageService.UnregisterSourceFile(Editor, sourceFile);
-            }
+            //if (LanguageService != null && sourceFile != null)
+            //{
+            //    LanguageService.UnregisterSourceFile(Editor, sourceFile);
+            //}
 
-            try
-            {
-                LanguageService = Shell.Instance.LanguageServices.Single((o) => o.CanHandle(sourceFile));
+            //try
+            //{
+            //    LanguageService = Shell.Instance.LanguageServices.Single((o) => o.CanHandle(sourceFile));
 
-                ShellViewModel.Instance.StatusBar.Language = LanguageService.Title;
+            //    ShellViewModel.Instance.StatusBar.Language = LanguageService.Title;
 
-                LanguageService.RegisterSourceFile(intellisenseControl, Editor, sourceFile, TextDocument);
-            }
-            catch
-            {
-                LanguageService = null;
-            }
+            //    LanguageService.RegisterSourceFile(intellisenseControl, Editor, sourceFile, TextDocument);
+            //}
+            //catch
+            //{
+            //    LanguageService = null;
+            //}
 
-            IsDirty = false;
+            //IsDirty = false;
 
 
-            StartBackgroundWorkers();
+            //StartBackgroundWorkers();
 
-            DocumentLoaded(this, new EventArgs());
+            //if (DocumentLoaded != null)
+            //{
+            //    DocumentLoaded(this, new EventArgs());
+            //}
 
-            TextDocument.TextChanged += TextDocument_TextChanged;
+            ////TextDocument.TextChanged += TextDocument_TextChanged;
 
-            OnBeforeTextChanged(null);
+            //OnBeforeTextChanged(null);
 
-            TriggerCodeAnalysis();
+            //TriggerCodeAnalysis();
         }
 
         public void OpenFile(ISourceFile file, IIntellisenseControl intellisense)
