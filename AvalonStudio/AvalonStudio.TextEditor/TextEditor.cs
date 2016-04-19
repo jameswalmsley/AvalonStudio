@@ -57,10 +57,11 @@
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
+            textView = null;
             TextDocument = null;
             Content = null;
             disposables.Dispose();
-            textChangedDelayTimer.Tick -= TextChangedDelayTimer_Tick;
+            textChangedDelayTimer.Tick -= TextChangedDelayTimer_Tick;            
         }
 
         public TextEditor()
@@ -323,8 +324,7 @@
         #endregion
 
         #region Properties
-        public TextView TextView { get { return textView; } }
-        public ScrollViewer ScrollViewer { get; set; }
+        public TextView TextView { get { return textView; } }        
         #endregion
 
         #region Private Methods
@@ -697,9 +697,7 @@
                 //        LineHeight = textView.CharSize.Height;
                 //    };
                 }
-            }));
-
-            ScrollViewer = e.NameScope.Find<ScrollViewer>("scrollViewer");
+            }));            
         }
 
         protected override void OnPointerPressed(PointerPressedEventArgs e)
