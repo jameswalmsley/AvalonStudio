@@ -16,10 +16,10 @@ namespace AvalonStudio.Controls.Dock
         BottomLeft
     }
 
-    public class AvalonViewItem : ContentControl
+    public class DockItem : ContentControl
     {
         public static readonly PerspexProperty<double> XProperty =
-            PerspexProperty.RegisterDirect<AvalonViewItem, double>("X", o => o.X,
+            PerspexProperty.RegisterDirect<DockItem, double>("X", o => o.X,
                 (o, v) => o.X = v);
 
         private double _x;
@@ -31,7 +31,7 @@ namespace AvalonStudio.Controls.Dock
         }
 
         public static readonly PerspexProperty<double> YProperty =
-            PerspexProperty.RegisterDirect<AvalonViewItem, double>("Y", o => o.Y,
+            PerspexProperty.RegisterDirect<DockItem, double>("Y", o => o.Y,
                 (o, v) => o.Y = v);
 
         private double _y;
