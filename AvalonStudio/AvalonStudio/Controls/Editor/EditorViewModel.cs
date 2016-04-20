@@ -65,54 +65,54 @@
 
             tabCharacter = "    ";
 
-            //model.DocumentLoaded += (sender, e) =>
-            //{
-            //    foreach (var bgRenderer in languageServiceBackgroundRenderers)
-            //    {
-            //        BackgroundRenderers.Remove(bgRenderer);
-            //    }
+            model.DocumentLoaded += (sender, e) =>
+            {
+                foreach (var bgRenderer in languageServiceBackgroundRenderers)
+                {
+                    BackgroundRenderers.Remove(bgRenderer);
+                }
 
-            //    languageServiceBackgroundRenderers.Clear();
+                languageServiceBackgroundRenderers.Clear();
 
-            //    foreach (var transformer in languageServiceDocumentLineTransformers)
-            //    {
-            //        DocumentLineTransformers.Remove(transformer);
-            //    }
+                foreach (var transformer in languageServiceDocumentLineTransformers)
+                {
+                    DocumentLineTransformers.Remove(transformer);
+                }
 
-            //    languageServiceDocumentLineTransformers.Clear();
+                languageServiceDocumentLineTransformers.Clear();
 
-            //    if (model.LanguageService != null)
-            //    {
-            //        languageServiceBackgroundRenderers.AddRange(model.LanguageService.GetBackgroundRenderers(model.ProjectFile));
+                if (model.LanguageService != null)
+                {
+                    languageServiceBackgroundRenderers.AddRange(model.LanguageService.GetBackgroundRenderers(model.ProjectFile));
 
-            //        foreach (var bgRenderer in languageServiceBackgroundRenderers)
-            //        {
-            //            BackgroundRenderers.Add(bgRenderer);
-            //        }
+                    foreach (var bgRenderer in languageServiceBackgroundRenderers)
+                    {
+                        BackgroundRenderers.Add(bgRenderer);
+                    }
 
-            //        languageServiceDocumentLineTransformers.AddRange(model.LanguageService.GetDocumentLineTransformers(model.ProjectFile));
+                    languageServiceDocumentLineTransformers.AddRange(model.LanguageService.GetDocumentLineTransformers(model.ProjectFile));
 
-            //        foreach (var textTransformer in languageServiceDocumentLineTransformers)
-            //        {
-            //            DocumentLineTransformers.Add(textTransformer);
-            //        }
-            //    }
+                    foreach (var textTransformer in languageServiceDocumentLineTransformers)
+                    {
+                        DocumentLineTransformers.Add(textTransformer);
+                    }
+                }
 
-            //    model.CodeAnalysisCompleted += (s, ee) =>
-            //    {
-            //        Diagnostics = model.CodeAnalysisResults.Diagnostics;
-            //        HighlightingData = new ObservableCollection<SyntaxHighlightingData>(model.CodeAnalysisResults.SyntaxHighlightingData);
-            //        ShellViewModel.Instance.InvalidateErrors();
-            //    };
+                model.CodeAnalysisCompleted += (s, ee) =>
+                {
+                    Diagnostics = model.CodeAnalysisResults.Diagnostics;
+                    HighlightingData = new ObservableCollection<SyntaxHighlightingData>(model.CodeAnalysisResults.SyntaxHighlightingData);
+                    ShellViewModel.Instance.InvalidateErrors();
+                };
 
-            //    this.RaisePropertyChanged(nameof(TextDocument));
-            //    this.RaisePropertyChanged(nameof(Title));
-            //};
+                this.RaisePropertyChanged(nameof(TextDocument));
+                this.RaisePropertyChanged(nameof(Title));
+            };
 
-            //model.TextChanged += (sender, e) =>
-            //{
-            //    this.RaisePropertyChanged(nameof(Title));
-            //};
+            model.TextChanged += (sender, e) =>
+            {
+                this.RaisePropertyChanged(nameof(Title));
+            };
 
             this.intellisense = new IntellisenseViewModel(model, this);
 

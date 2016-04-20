@@ -64,6 +64,11 @@
             textChangedDelayTimer.Tick -= TextChangedDelayTimer_Tick;            
         }
 
+        ~TextEditor()
+        {
+            System.Console.WriteLine(("Text Editor Control Destructed."));
+        }
+         
         public TextEditor()
         {
             disposables = new CompositeDisposable();

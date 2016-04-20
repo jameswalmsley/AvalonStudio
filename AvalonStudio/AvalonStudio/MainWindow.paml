@@ -37,16 +37,8 @@
         </Grid>
 
         <DockPanel DockPanel.Dock="Right">
-
-          <ContentControl Content="{Binding SelectedDocument}">
-            <ContentControl.DataTemplates>
-              <DataTemplate>
-                <Controls:Editor />
-              </DataTemplate>              
-            </ContentControl.DataTemplates>
-          </ContentControl>
           
-          <!--<StackPanel DockPanel.Dock="Top">
+          <StackPanel DockPanel.Dock="Top">
             <TabStrip Name="strip"  Items="{Binding Documents}" SelectedItem="{Binding SelectedDocument, Mode=TwoWay}" Focusable="false">
               <TabStrip.Styles>                
 
@@ -115,7 +107,7 @@
                 <Controls:Editor />
               </DataTemplate>
             </Carousel.DataTemplates>
-          </Carousel>-->
+          </Carousel>
           
         </DockPanel>       
       </DockPanel>

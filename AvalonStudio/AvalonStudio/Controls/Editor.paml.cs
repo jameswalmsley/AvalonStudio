@@ -12,6 +12,11 @@
         private EditorViewModel editorViewModel;
         private CompositeDisposable disposables;
 
+        ~Editor()
+        {
+            System.Console.WriteLine(("Editor UserControl Destructed."));
+        }
+
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             editor = this.Find<TextEditor>("editor");
