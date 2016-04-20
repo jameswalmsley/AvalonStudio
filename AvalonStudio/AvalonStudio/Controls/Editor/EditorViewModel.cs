@@ -24,6 +24,9 @@
 
 
         #region Constructors
+
+        
+
         public EditorViewModel(EditorModel model) : base(model)
         {
             disposables = new CompositeDisposable();
@@ -44,6 +47,7 @@
                 Save();
                 ShellViewModel.Instance.Documents.Remove(this);
                 ShellViewModel.Instance.SelectedDocument = null;
+                ShellViewModel.Instance.InvalidateErrors();
                 Model.ShutdownBackgroundWorkers();
 
                 Model.Dispose();
@@ -127,25 +131,17 @@
 
             margins = new ObservableCollection<TextViewMargin>();
 
-            timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 5);
-            timer.Tick += Timer_Tick;
-            timer.Start();
-
+            ShellViewModel.Instance.StatusBar.InstanceCount++;
         }
 
-
-        DispatcherTimer timer;
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            CloseCommand.Execute(null);
-            timer.Tick -= Timer_Tick;
-        }
 
         ~EditorViewModel()
         {
+            Dispatcher.UIThread.InvokeAsync(() => {
+                                                      ShellViewModel.Instance.StatusBar.InstanceCount--; });
             Model.ShutdownBackgroundWorkers();
+
+            System.Console.WriteLine(("Editor VM Destructed."));
         }
         #endregion
 
