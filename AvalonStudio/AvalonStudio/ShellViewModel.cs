@@ -29,6 +29,7 @@
     using Splat;
     using Controls.Standard.ErrorList;
     using Shell;
+    using Controls.Standard.SolutionExplorer;
     public enum Perspective
     {
         Editor,
@@ -317,6 +318,12 @@
             {
                 CurrentSolution = Solution.Load(result[0]);
             }
+        }
+
+        public void ShowNewProjectDialog()
+        {
+            ModalDialog = new NewProjectDialogViewModel();
+            ModalDialog.ShowDialog();
         }
 
         public void ShowProjectPropertiesDialog()
