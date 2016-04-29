@@ -5,7 +5,7 @@
         <Separator />
       </DataTemplate>
       <DataTemplate>
-        <MenuItem Header="{Binding Text}" Command="{Binding Command}" Items="{Binding Children}" />
+        <MenuItem Header="{Binding Text}" Command="{Binding Command}" Items="{Binding Children}" ToolTip.Tip="{Binding ToolTip}"  />
       </DataTemplate>
     </Menu.DataTemplates>
   </Menu>
