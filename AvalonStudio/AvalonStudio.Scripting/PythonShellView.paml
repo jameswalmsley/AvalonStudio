@@ -1,0 +1,10 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui" xmlns:cont="clr-namespace:AvalonStudio.Controls;assembly=AvalonStudio.Extensibility" 
+             xmlns:te="clr-namespace:AvalonStudio.TextEditor;assembly=AvalonStudio.TextEditor"
+             >
+  <cont:ToolControl Title="Python Console">
+    <te:TextEditor Name="Console" Grid.Row="1" BorderThickness="0" Background="{StyleResource ThemeControlDarkBrush}" 
+                   FontFamily="Inconsolata" FontSize="15" TextDocument="{Binding Document}"  MinWidth="400" MinHeight="150"
+  CaretIndex="{Binding CaretIndex, Mode=TwoWay}" BackgroundRenderers="{Binding BackgroundRenderers}"
+  AcceptsReturn="true" AcceptsTab="true" TabCharacter="    " />
+  </cont:ToolControl>
+</UserControl>

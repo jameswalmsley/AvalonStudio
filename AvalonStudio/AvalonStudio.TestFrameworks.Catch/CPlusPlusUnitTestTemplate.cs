@@ -100,5 +100,15 @@ namespace AvalonStudio.Languages.CPlusPlus
 
 			return project;
 		}
-	}
+
+        public char ReadKey()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ReadLine()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

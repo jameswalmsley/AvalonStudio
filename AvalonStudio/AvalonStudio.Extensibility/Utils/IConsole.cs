@@ -12,6 +12,10 @@ namespace AvalonStudio.Utils
 
 		void Write(char data);
 
+        char ReadKey();
+
+        string ReadLine();
+
 		void Clear();
 	}
 }

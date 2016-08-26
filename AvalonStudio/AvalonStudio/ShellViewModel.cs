@@ -28,6 +28,7 @@ using AvalonStudio.TextEditor;
 using AvalonStudio.Toolchains;
 using AvalonStudio.Utils;
 using ReactiveUI;
+using System.IO;
 
 namespace AvalonStudio
 {
@@ -214,7 +215,7 @@ namespace AvalonStudio
 		public TabControlViewModel BottomRightTabs { get; }
         public TabControlViewModel MiddleTopTabs { get; }
 
-		public IConsole Console { get; }
+        private IConsole Console;
 
 		public IErrorList ErrorList { get; }
 
@@ -562,5 +563,17 @@ namespace AvalonStudio
 				document.Model.ShutdownBackgroundWorkers();
 			}
 		}
-	}
+
+        public void OpenSolution(string file)
+        {
+            if (File.Exists(file))
+            {
+                CurrentSolution = Solution.Load(file);
+            }
+            else
+            {
+                throw new Exception($"File: {file} does not exist.");
+            }
+        }
+    }
 }

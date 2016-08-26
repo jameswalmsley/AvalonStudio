@@ -15,9 +15,9 @@ namespace AvalonStudio.Extensibility
 			return (T) Get(typeof (T), contract);
 		}
 
-		public static void RegisterConstant<T>(T instance, Type type)
+		public static void RegisterConstant<T>(T instance, Type type, string contract = null)
 		{
-			Locator.CurrentMutable.RegisterConstant(instance, type);
-		}
+			Locator.CurrentMutable.RegisterConstant(instance, type, contract);
+		}        
 	}
 }

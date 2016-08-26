@@ -46,7 +46,17 @@ namespace AvalonStudio
 			}
 		}
 
-		public void Write(char data)
+        public char ReadKey()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ReadLine()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Write(char data)
 		{
 			Console.Write(data);
 		}

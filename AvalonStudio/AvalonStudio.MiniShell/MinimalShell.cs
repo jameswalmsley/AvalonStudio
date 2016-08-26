@@ -153,5 +153,10 @@ namespace AvalonStudio.Shell
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public void OpenSolution(string file)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

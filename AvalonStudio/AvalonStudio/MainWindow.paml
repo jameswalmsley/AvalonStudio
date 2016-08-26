@@ -67,7 +67,7 @@
         </Grid>
               
         <GridSplitter Grid.Row="1" Orientation="Horizontal" />
-        <Grid ColumnDefinitions="*,5,Auto" Grid.Row="2">
+        <Grid ColumnDefinitions="100*,5,50*" Grid.Row="2">
           <Controls:TabControlView DataContext="{Binding BottomTabs}" />
           <GridSplitter Grid.Column="1" />
           <Controls:TabControlView Grid.Column="2" DataContext="{Binding BottomRightTabs}" />

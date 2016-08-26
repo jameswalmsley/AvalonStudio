@@ -10,23 +10,25 @@ using AvalonStudio.TextEditor.Rendering;
 using AvalonStudio.Utils;
 using ReactiveUI;
 
-namespace AvalonStudio.Controls.Standard.Console
+namespace AvalonStudio.Scripting
 {
-	public class ConsoleViewModel : ToolViewModel, IConsole, IPlugin
+	public class PythonShellViewModel : ToolViewModel<PythonShell>, IConsole, IPlugin
 	{
 		private ObservableCollection<IBackgroundRenderer> backgroundRenderers;
 
 		private int caretIndex;
 		private IShell shell;
 
-		public ConsoleViewModel()
+		public PythonShellViewModel() : base(null)
 		{
-			Title = "Console";
+            Model = new PythonShell(this);
+			Title = "Python Shell";
 			document = new TextDocument();
 			backgroundRenderers = new ObservableCollection<IBackgroundRenderer>();
 			backgroundRenderers.Add(new SelectedLineBackgroundRenderer());
 			backgroundRenderers.Add(new SelectionBackgroundRenderer());
-		}
+
+		}        
 
         private TextDocument document;
         public TextDocument Document
@@ -50,7 +52,7 @@ namespace AvalonStudio.Controls.Standard.Console
 
 		public override Location DefaultLocation
 		{
-			get { return Location.Bottom; }
+			get { return Location.BottomRight; }
 		}
 
 		public void Clear()
@@ -107,17 +109,18 @@ namespace AvalonStudio.Controls.Standard.Console
 
 		public void OverWrite(string data)
 		{
-			WriteLine(data);
+			Document.Replace(Document.GetLineByOffset(caretIndex), data);
 		}
 
 		public void BeforeActivation()
 		{
-			IoC.RegisterConstant(this, typeof (IConsole));
+			IoC.RegisterConstant(this, typeof (IConsole), "Python");
 		}
 
 		public void Activation()
 		{
 			shell = IoC.Get<IShell>();
+            Model.Initialise();
 		}
 
 		public string Name
@@ -147,7 +150,7 @@ namespace AvalonStudio.Controls.Standard.Console
 
         public string ReadLine()
         {
-            throw new NotImplementedException();
+            return Document.GetText(Document.GetLineByOffset(CaretIndex));
         }
     }
 }

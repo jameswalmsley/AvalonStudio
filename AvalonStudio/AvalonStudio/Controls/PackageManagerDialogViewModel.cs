@@ -204,5 +204,15 @@ namespace AvalonStudio.Controls
 			{
 			}
 		}
-	}
+
+        public char ReadKey()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ReadLine()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

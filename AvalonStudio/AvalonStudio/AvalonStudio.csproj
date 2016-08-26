@@ -465,6 +465,10 @@
       <Project>{29C948E9-4D96-4490-B039-A5BBF6EEC2E5}</Project>
       <Name>AvalonStudio.Repositories</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AvalonStudio.Scripting\AvalonStudio.Scripting.csproj">
+      <Project>{6778c004-a6dc-4961-a3e9-4d4ff57e89b8}</Project>
+      <Name>AvalonStudio.Scripting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AvalonStudio.TestFrameworks.Catch\AvalonStudio.TestFrameworks.Catch.csproj">
       <Project>{3464977F-B29D-43E6-8EA8-D9CEC603D989}</Project>
       <Name>AvalonStudio.TestFrameworks.Catch</Name>
